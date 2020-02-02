@@ -6,6 +6,15 @@ bool setupWiFiManager() {
   wifiManager.setDebugOutput(false);
   wifiManager.setTimeout(300);
   wifiManager.setCustomHeadElement("<style>html{background:#fb7906};</style>");
+  
+  ////STATIC IP (if needed)
+//  IPAddress ip(192, 168, 0, 125);
+//  IPAddress gateway(192, 168, 0, 1);
+//  IPAddress subnet(255, 255, 255, 0);
+//  IPAddress dns1(8, 8, 8, 8);
+//  IPAddress dns2(8, 8, 4, 4);
+//  wifiManager.setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn, IPAddress dns1, IPAddress dns2)
+  ////STATIC IP (if needed)
 
   return wifiManager.autoConnect(deviceName.c_str());
 }

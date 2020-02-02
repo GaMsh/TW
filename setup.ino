@@ -55,8 +55,9 @@ void setup()
 
     StaticJsonDocument<1024> jb;
     String postData = 
-      "token=" + String(DEVICE_REVISION) + String(DEVICE_ID) + "&" +
+      "token=" + String(DEVICE_REVISION) + "&" +
       "model=" + String(DEVICE_MODEL) + "&" +
+      "firmware=" + String(DEVICE_FIRMWARE) + "&"
       "ip=" + WiFi.localIP().toString() + "&" +
       "mac=" + String(WiFi.macAddress()) + "&" +
       "apmac=" + String(WiFi.softAPmacAddress()) + "&" +

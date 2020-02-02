@@ -2,6 +2,16 @@ void loop()
 {
   unsigned long currentMillis = millis();
 
+  if (!CHIP_TEST) {
+    if (currentMillis - previousMillisReboot > 0) {
+      Serial.println("It`s time to reboot");
+      if (!NO_INTERNET && !NO_SERVER && BUFFER_COUNT == 0) {
+        ESP.restart();
+      }
+      
+    }
+  }
+
   if (currentMillis - previousMillis >= SENS_INTERVAL) {
     ticker.detach();
     digitalWrite(LED_BUILTIN, HIGH);

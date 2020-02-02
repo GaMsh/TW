@@ -2,10 +2,6 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
-//needed for Config and Token store
-//#include <EEPROM.h>
-//#include <EEPROMAnything.h>
-
 //needed for local file system SFIFFS working
 #include <FS.h>
 #include <ArduinoJson.h>
@@ -25,7 +21,7 @@
 
 // // // это был длииинный список библиотек для запуска этой штуки :)))
 
-ADC_MODE(ADC_VCC);
+ADC_MODE(ADC_VCC); // чтобы измерять self-voltage level 3.3V
 
 Ticker ticker;
 HTU21D myHumidity;
@@ -34,7 +30,7 @@ BME280I2C bme;
 // инициализируем файлы
 File bufferFile;
 
-#define SERIAL_BAUD 115200 // скорость Serial порта, менять не надо
+#define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату и ключи без подключения датчиков
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
@@ -42,25 +38,26 @@ File bufferFile;
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, система не может функционировать без вмешательства прямых рук
 
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
-int REBOOT_INTERVAL = 86400000; // интервал принудительной перезагрузки устройства
+int REBOOT_INTERVAL = 2 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети
 
-boolean NO_INTERNET = true; //флаг состояния, поднимается если отвалилась wifi сеть
-boolean NO_SERVER = true; //флаг состояния, поднимается если отвалился сервер
-int BUFFER_COUNT = 0;
+boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
+boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
+int BUFFER_COUNT = 0; // счётчик строк в буфферном файле не отправленных на сервер
 
 const char* DEVICE_MODEL = "GaM_TW1";
 const char* DEVICE_REVISION = "oksana"; 
-const char* DEVICE_ID = "INITIAL";
+const char* DEVICE_FIRMWARE = "1.4";
 
 const int LED_GREEN   = 14; // PIN D5
 const int LED_YELLOW  = 12; // PIN D6
 const int LED_RED     = 13; // PIN D7
 
 unsigned long previousMillis = SENS_INTERVAL * -2; //Чтобы начинать отправлять данные сразу после запуска
+unsigned long previousMillisReboot = 0;
+
+String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 
 String OsMoSSLFingerprint = "";
-
-String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_ID);
 String TOKEN = "";
 
 int bytesWriten = 0;

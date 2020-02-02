@@ -1,6 +1,6 @@
 void checkFirmwareUpdate() {
-  if (!CHIP_TEST) {
-    t_httpUpdate_return ret = ESPhttpUpdate.update("http://tw.gamsh.ru", "1.2.3"); // , "здесь опциональный аргумент с версией"
+  if (!CHIP_TEST && !NO_INTERNET) {
+    t_httpUpdate_return ret = ESPhttpUpdate.update("http://tw.gamsh.ru", DEVICE_FIRMWARE);
     
     switch (ret) {
       case HTTP_UPDATE_FAILED:
@@ -54,7 +54,7 @@ boolean callToServer(String urlString) {
   
     int httpCode = http.POST(toSend);
     String payload = http.getString();
-    Serial.print("Response: ");
+    Serial.print(String(httpCode) + ": ");
     Serial.println(payload);
     http.end();
 
@@ -70,8 +70,8 @@ boolean callToServer(String urlString) {
 
   int httpCode = http.POST(urlString);
   String payload = http.getString();
-  Serial.print("Response: ");
-  Serial.println(httpCode + " : " + payload);
+  Serial.print(String(httpCode) + ": ");
+  Serial.println(payload);
   http.end();
 
   digitalWrite(LED_BUILTIN, LOW);
