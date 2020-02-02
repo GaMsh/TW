@@ -3,12 +3,13 @@ void loop()
   unsigned long currentMillis = millis();
 
   if (!CHIP_TEST) {
-    if (currentMillis - previousMillisReboot > 0) {
+    if (currentMillis - previousMillisReboot > REBOOT_INTERVAL) {
       Serial.println("It`s time to reboot");
       if (!NO_INTERNET && !NO_SERVER && BUFFER_COUNT == 0) {
         ESP.restart();
+      } else {
+        Serial.println("But it`s impossible");
       }
-      
     }
   }
 
