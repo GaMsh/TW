@@ -29,4 +29,5 @@ void tickFront(int mode)
 
 void tickOffAll() {
   ticker.detach();
+  tickerBack.detach();
 }

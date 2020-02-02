@@ -7,7 +7,7 @@ void setup()
   
   WiFi.hostname(deviceName);
   
-  ticker.attach_ms(100, tickBack);
+  tickerBack.attach_ms(100, tickBack);
   ticker.attach_ms(100, tickFront, MAIN_MODE_OFFLINE);
   
   Serial.begin(SERIAL_BAUD);
@@ -42,8 +42,6 @@ void setup()
   
     TOKEN = readCfgFile("token");
 
-    checkFirmwareUpdate();
-
     Serial.println("Syncing time...");
     configTime(0, 0, "pool.ntp.org");  
     setenv("TZ", "GMT+0", 0);
@@ -74,7 +72,7 @@ void setup()
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     int httpCode = http.POST(postData);
     if (httpCode != 200 && !CHIP_TEST) {
-        ticker.attach_ms(200, tickBack);
+        tickerBack.attach_ms(200, tickBack);
         ticker.attach_ms(500, tickFront, MAIN_MODE_OFFLINE);
         
         Serial.println("Error init device from OsMo.mobi");
@@ -147,14 +145,14 @@ void setup()
 //      tokenFile.close();
 //    }
 
-    ticker.detach();
-    ticker.attach_ms(100, tickBack);
+    tickOffAll();
+    tickerBack.attach_ms(100, tickBack);
 
     if (!CHIP_TEST) {
       Wire.begin();
 
-      ticker.detach();
-      ticker.attach_ms(2000, tickBack);
+      tickOffAll();
+      tickerBack.attach_ms(2000, tickBack);
       ticker.attach_ms(2000, tickFront, MAIN_MODE_NORMAL);
       while(!bme.begin())
       {
@@ -163,14 +161,16 @@ void setup()
         delay(2000);
       }
   
-      ticker.detach();
-      ticker.attach_ms(3000, tickBack);
+      tickOffAll();
+      tickerBack.attach_ms(3000, tickBack);
       ticker.attach_ms(3000, tickFront, MAIN_MODE_NORMAL);
       myHumidity.begin();
     }
+
+    checkFirmwareUpdate();
   }
 
-  ticker.detach();
+  tickOffAll();
 
   digitalWrite(BUILTIN_LED, HIGH);
 }

@@ -24,6 +24,7 @@
 ADC_MODE(ADC_VCC); // чтобы измерять self-voltage level 3.3V
 
 Ticker ticker;
+Ticker tickerBack;
 HTU21D myHumidity;
 BME280I2C bme;
 
