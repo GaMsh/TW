@@ -2,7 +2,7 @@
 int bufferCount() 
 {
   int countLine = 0;
-  bufferFile = SPIFFS.open("/buffer.txt", "r");
+  bufferFile = SPIFFS.open("/data.buff", "r");
   char buffer[256];
   while (bufferFile.available()) {
     int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
@@ -14,7 +14,7 @@ int bufferCount()
 }
 
 bool bufferWrite(String urlString) {
-  bufferFile = SPIFFS.open("/buffer.txt", "a+");
+  bufferFile = SPIFFS.open("/data.buff", "a+");
   if (bufferFile) {
     Serial.println("Write to local buffer file...");
     Serial.println(urlString);
@@ -28,7 +28,7 @@ bool bufferWrite(String urlString) {
 }
 
 int bufferReadAndSend() {
-  bufferFile = SPIFFS.open("/buffer.txt", "r");
+  bufferFile = SPIFFS.open("/data.buff", "r");
   if (bufferFile) {
     bufferFile.seek(0, SeekSet);
     Serial.print("Buffer size: ");
