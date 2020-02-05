@@ -27,7 +27,7 @@ void setup()
     if (SPIFFS.begin()) {
       Serial.println(F("SPIFFS was mounted"));
     } else {
-        Serial.println(F("Error while mounting SPIFFS"));
+      Serial.println(F("Error while mounting SPIFFS"));
     }
   
     int customInterval = readCfgFile("interval").toInt();
@@ -53,16 +53,17 @@ void setup()
 
     StaticJsonDocument<1024> jb;
     String postData = 
-      "token=" + String(DEVICE_REVISION) + "&" +
+      "token=" + TOKEN + "&" +
+      "revision=" + String(DEVICE_REVISION) + "&" +
       "model=" + String(DEVICE_MODEL) + "&" +
       "firmware=" + String(DEVICE_FIRMWARE) + "&"
       "ip=" + WiFi.localIP().toString() + "&" +
       "mac=" + String(WiFi.macAddress()) + "&" +
-      "apmac=" + String(WiFi.softAPmacAddress()) + "&" +
       "ssid=" + String(WiFi.SSID()) + "&" +
       "rssi=" + String(WiFi.RSSI()) + "&" +
       "chipid=" + String(ESP.getFlashChipId()) + "&" +
-      "vcc=" + String(ESP.getVcc()/1000.0);
+      "vcc=" + String(ESP.getVcc());
+    Serial.println(postData);
 
     const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
     DynamicJsonDocument doc(capacity);
@@ -80,10 +81,11 @@ void setup()
           delay(60000);
         }
     }
+    Serial.println("get device config and set env, result: " + String(httpCode));
     if (httpCode == 200) {
       NO_SERVER = false;
     }
-    Serial.println("get device config and set env, result: " + String(httpCode));
+    
     String payload = http.getString();
     deserializeJson(doc, payload);
     http.end();
@@ -92,61 +94,26 @@ void setup()
     Serial.println(doc["interval"].as<int>());
     if (doc["interval"].as<int>() > 4) {
       SENS_INTERVAL = doc["interval"].as<int>() * 1000;
-
       writeCfgFile("interval", doc["interval"].as<String>());
-
-//      intervalFile = SPIFFS.open(F("/interval.cfg"), "w");
-//      if (intervalFile) {
-//        Serial.println("Write file content!");
-//        bytesWriten = intervalFile.print(SENS_INTERVAL);
-//        if (bytesWriten > 0) {
-//          Serial.print("File was written: ");
-//          Serial.println(bytesWriten);
-//        } else {
-//          Serial.println("File write failed");
-//        }
-//        intervalFile.close();
-//      }
     }
 
     Serial.print("SHA-1 FingerPrint for SSL KEY: ");
     Serial.println(doc["tlsFinger"].as<String>());
     OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
     writeCfgFile("ssl", OsMoSSLFingerprint);
-//    sslFingerprintFile = SPIFFS.open(F("/ssl.cfg"), "w");
-//    if (sslFingerprintFile) {
-//      Serial.println("Write file content!");
-//      bytesWriten = sslFingerprintFile.print(OsMoSSLFingerprint);
-//      if (bytesWriten > 0) {
-//        Serial.print("File was written: ");
-//        Serial.println(bytesWriten);
-//      } else {
-//        Serial.println("File write failed");
-//      }
-//      sslFingerprintFile.close();
-//    }
-
 
     Serial.print("TOKEN: ");
     Serial.println(doc["token"].as<String>());
     TOKEN = doc["token"].as<String>();
     writeCfgFile("token", TOKEN);
-    
-//    tokenFile = SPIFFS.open(F("/token.cfg"), "w");
-//    if (tokenFile) {
-//      Serial.println("Write file content!");
-//      bytesWriten = tokenFile.print(TOKEN);
-//      if (bytesWriten > 0) {
-//        Serial.print("File was written: ");
-//        Serial.println(bytesWriten);
-//      } else {
-//        Serial.println("File write failed");
-//      }
-//      tokenFile.close();
-//    }
 
     tickOffAll();
     tickerBack.attach_ms(100, tickBack);
+
+    if (bufferCount() > 0) {
+      Serial.println("");
+      Serial.println("Buffer count: " + bufferCount());
+    }
 
     if (!CHIP_TEST) {
       Wire.begin();
@@ -157,7 +124,6 @@ void setup()
       while(!bme.begin())
       {
         Serial.println("Could not find BME-280 sensor!");
-        Serial.println(millis());
         delay(2000);
       }
   

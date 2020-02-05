@@ -30,6 +30,7 @@ boolean callToServer(String urlString) {
     NO_INTERNET = false;
 
     Serial.println("NO INTERNET MODE DEACTIVATED");
+    bufferFile = SPIFFS.open("/buffer.txt", "r");
     bufferFile.seek(0, SeekSet);
     Serial.print("Buffer size: ");
     Serial.print(bufferFile.size());
@@ -61,7 +62,6 @@ boolean callToServer(String urlString) {
     return true;
   }
     
-  Serial.println("Sending to server...");
   Serial.println(urlString);
   
   HTTPClient http; 
@@ -69,6 +69,13 @@ boolean callToServer(String urlString) {
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
   int httpCode = http.POST(urlString);
+  Serial.println("Sending to server...");
+  if (httpCode != 200) {
+    NO_SERVER = true;
+    bufferWrite(urlString);
+    return false;
+  }
+  NO_SERVER = false;
   String payload = http.getString();
   Serial.print(String(httpCode) + ": ");
   Serial.println(payload);

@@ -5,7 +5,7 @@ void loop()
   if (!CHIP_TEST) {
     if (currentMillis - previousMillisReboot > REBOOT_INTERVAL) {
       Serial.println("It`s time to reboot");
-      if (!NO_INTERNET && !NO_SERVER && BUFFER_COUNT == 0) {
+      if (!NO_INTERNET && !NO_SERVER) { // && BUFFER_COUNT == 0) {
         ESP.restart();
       } else {
         Serial.println("But it`s impossible");
@@ -27,8 +27,8 @@ void loop()
     float humd;    
 
     if (CHIP_TEST) {
-      humd = 95.1;
-      temp = 22.2;
+      humd = 90.5;
+      temp = 20.5;
     } else {
       humd = myHumidity.readHumidity();
       temp = myHumidity.readTemperature();
@@ -37,9 +37,9 @@ void loop()
     ///////////
 
     if (CHIP_TEST) {
-      pressure = 762.23;
+      pressure = 760.25;
       tempC = 25.2;
-      humdC = 65.932;    
+      humdC = 65.93;    
     } else {
       BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
       BME280::PresUnit presUnit(BME280::PresUnit_Pa);
