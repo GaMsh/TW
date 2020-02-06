@@ -47,11 +47,11 @@ int BUFFER_COUNT = 0; // счётчик строк в буфферном фай�
 
 const char* DEVICE_MODEL = "GaM_TW1";
 const char* DEVICE_REVISION = "oksana"; 
-const char* DEVICE_FIRMWARE = "1.4.3";
+const char* DEVICE_FIRMWARE = "1.4.5";
 
 const int LED_GREEN   = 14; // PIN D5
-const int LED_YELLOW  = 12; // PIN D6
-const int LED_RED     = 13; // PIN D7
+//const int LED_YELLOW  = 12; // PIN D6
+//const int LED_RED     = 13; // PIN D7
 
 unsigned long previousMillis = SENS_INTERVAL * -2; //Чтобы начинать отправлять данные сразу после запуска
 unsigned long previousMillisReboot = 0;

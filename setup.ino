@@ -2,8 +2,8 @@ void setup()
 {  
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_YELLOW, OUTPUT);
-  pinMode(LED_RED, OUTPUT);
+//  pinMode(LED_YELLOW, OUTPUT);
+//  pinMode(LED_RED, OUTPUT);
   
   WiFi.hostname(deviceName);
   
@@ -61,8 +61,8 @@ void setup()
       "mac=" + String(WiFi.macAddress()) + "&" +
       "ssid=" + String(WiFi.SSID()) + "&" +
       "rssi=" + String(WiFi.RSSI()) + "&" +
-      "chipid=" + String(ESP.getFlashChipId()) + "&" +
-      "vcc=" + String(ESP.getVcc());
+      "vcc=" + String(ESP.getVcc()) + "&" +
+      "bufferCount=" + String(bufferCount());
     Serial.println(postData);
 
     const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
@@ -93,19 +93,28 @@ void setup()
     Serial.print(F("Interval: "));
     Serial.println(doc["interval"].as<int>());
     if (doc["interval"].as<int>() > 4) {
-      SENS_INTERVAL = doc["interval"].as<int>() * 1000;
-      writeCfgFile("interval", doc["interval"].as<String>());
+      int SENS_INTERVAL_NEW = doc["interval"].as<int>() * 1000;
+      if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
+        SENS_INTERVAL = SENS_INTERVAL_NEW;
+        writeCfgFile("interval", doc["interval"].as<String>());
+      }
     }
 
     Serial.print("SHA-1 FingerPrint for SSL KEY: ");
     Serial.println(doc["tlsFinger"].as<String>());
-    OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
-    writeCfgFile("ssl", OsMoSSLFingerprint);
+    if (OsMoSSLFingerprint != doc["tlsFinger"].as<String>()) {
+      OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
+      writeCfgFile("ssl", OsMoSSLFingerprint);
+      Serial.print("tlsFinger was updated in SPIFFS");
+    }
 
     Serial.print("TOKEN: ");
     Serial.println(doc["token"].as<String>());
-    TOKEN = doc["token"].as<String>();
-    writeCfgFile("token", TOKEN);
+    if (TOKEN != doc["token"].as<String>()) {
+      TOKEN = doc["token"].as<String>();
+      writeCfgFile("token", TOKEN);
+      Serial.print("Token was updated in SPIFFS");
+    }
 
     tickOffAll();
     tickerBack.attach_ms(100, tickBack);
