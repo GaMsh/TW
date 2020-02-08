@@ -16,7 +16,7 @@ void loop()
   if (currentMillis - previousMillis >= SENS_INTERVAL) {
     ticker.detach();
     digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_EXTERNAL, LOW);
     
     previousMillis = currentMillis;
 

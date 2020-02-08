@@ -1,3 +1,13 @@
+void resetWiFiSettings() {
+  tickerBack.attach_ms(256, tickBack);
+  Serial.println("WiFi reset by special PIN");
+  WiFi.disconnect(true);
+  delay(2000);
+  ESP.reset();
+  delay(1000);
+  ESP.restart();
+}
+
 bool setupWiFiManager() {
   WiFiManager wifiManager;
   wifiManager.setAPCallback(configModeCallback);

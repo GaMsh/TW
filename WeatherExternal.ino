@@ -32,7 +32,7 @@ BME280I2C bme;
 File bufferFile;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
-#define CHIP_TEST 0 // если нужно протестировать плату и ключи без подключения датчиков
+#define CHIP_TEST 1 // если нужно протестировать плату и ключи без подключения датчиков
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
 #define MAIN_MODE_OFFLINE 200 // система работает, но испытывает проблемы с передачей данных
@@ -44,12 +44,15 @@ int REBOOT_INTERVAL = 2 * 60 * 60000; // интервал принудитель
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
 int BUFFER_COUNT = 0; // счётчик строк в буфферном файле не отправленных на сервер
+int MODE_RESET_WIFI = 0;
 
 const char* DEVICE_MODEL = "GaM_TW1";
 const char* DEVICE_REVISION = "oksana"; 
-const char* DEVICE_FIRMWARE = "1.4.5";
+const char* DEVICE_FIRMWARE = "1.4.7";
 
-const int LED_GREEN   = 14; // PIN D5
+const int RESET_WIFI = 0; // PIN D3
+
+const int LED_EXTERNAL  = 14; // PIN D5
 //const int LED_YELLOW  = 12; // PIN D6
 //const int LED_RED     = 13; // PIN D7
 
@@ -58,7 +61,7 @@ unsigned long previousMillisReboot = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 
-String OsMoSSLFingerprint = "";
+String OsMoSSLFingerprint = ""; //69 3B 2D 26 B2 A7 96 5E 10 E4 2F 84 63 56 CE ED E2 EC DA A3
 String TOKEN = "";
 
 int bytesWriten = 0;

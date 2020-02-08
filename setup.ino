@@ -1,19 +1,35 @@
 void setup() 
 {  
   pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_EXTERNAL, OUTPUT);
 //  pinMode(LED_YELLOW, OUTPUT);
 //  pinMode(LED_RED, OUTPUT);
+
+  pinMode(RESET_WIFI, INPUT);
+
+  Serial.begin(SERIAL_BAUD);
+  while(!Serial) {}
+    
+  Serial.println("Device '" + deviceName + "' is starting...");
+
+// reset wifi RESET_WIFI pin to GROUND
+  int resetCycle = 0;
+  tickerBack.attach_ms(20, tickBack);
+  while (resetCycle < 50) {
+    MODE_RESET_WIFI = digitalRead(RESET_WIFI);
+    if (MODE_RESET_WIFI == LOW) {
+      resetWiFiSettings();
+      break;
+    }
+    resetCycle++;
+    delay(36);
+  }
+// reset wifi RESET_WIFI pin to GROUND
   
   WiFi.hostname(deviceName);
   
   tickerBack.attach_ms(100, tickBack);
   ticker.attach_ms(100, tickFront, MAIN_MODE_OFFLINE);
-  
-  Serial.begin(SERIAL_BAUD);
-  while(!Serial) {}
-  
-  Serial.println("Device '" + deviceName + "' is starting...");
 
   if (!setupWiFiManager()) {
     Serial.println("failed to connect and hit timeout");
