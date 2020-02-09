@@ -48,7 +48,6 @@ int bufferReadAndSend() {
     String toSend = "";
     char buffer[128];
     while (bufferFile.available()) {
-      Serial.println("row");
       int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
       buffer[l] = 0;
 
@@ -56,7 +55,7 @@ int bufferReadAndSend() {
       rowsCount++;
       rowsCountAll++;
       
-      if (rowsCount >= 10) {
+      if (rowsCount >= 10 || rowsCountAll >= until) {
         HTTPClient http; 
         http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
         http.setReuse(false);
@@ -64,16 +63,16 @@ int bufferReadAndSend() {
         http.setTimeout(15000);
         http.setUserAgent(deviceName);
     
-        Serial.println("SEND");
+        Serial.println("SEND part of buffer");
         int httpCode = http.POST(toSend);
         Serial.println(httpCode);
         http.end();
         if (httpCode == HTTP_CODE_OK) {
-          Serial.println("http3");
           toSend = "";
           rowsCount = 0;
 
           if (rowsCountAll >= until) {
+            Serial.println("Delete buffer file");
             bufferFile.close();
             SPIFFS.remove("/data.buff");
             return true;
