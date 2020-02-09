@@ -15,6 +15,7 @@
 #include <Wire.h>
 #include <SparkFunHTU21D.h>
 #include <BME280I2C.h>
+#include <EnvironmentCalculations.h>
 
 //needed for LED status
 #include <Ticker.h>
@@ -28,11 +29,18 @@ Ticker tickerBack;
 HTU21D myHumidity;
 BME280I2C bme;
 
+enum TempUnit
+{
+   TempUnit_Celsius,
+   TempUnit_Fahrenheit
+};
+
 // инициализируем файлы
 File bufferFile;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
-#define CHIP_TEST 1 // если нужно протестировать плату и ключи без подключения датчиков
+#define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков
+#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
 #define MAIN_MODE_OFFLINE 200 // система работает, но испытывает проблемы с передачей данных
@@ -43,12 +51,13 @@ int REBOOT_INTERVAL = 2 * 60 * 60000; // интервал принудитель
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
-int BUFFER_COUNT = 0; // счётчик строк в буфферном файле не отправленных на сервер
+int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 int MODE_RESET_WIFI = 0;
+int MODE_SEND_BUFFER = 0;
 
 const char* DEVICE_MODEL = "GaM_TW1";
 const char* DEVICE_REVISION = "oksana"; 
-const char* DEVICE_FIRMWARE = "1.4.7";
+const char* DEVICE_FIRMWARE = "1.5.0";
 
 const int RESET_WIFI = 0; // PIN D3
 

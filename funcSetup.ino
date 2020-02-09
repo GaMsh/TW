@@ -1,5 +1,5 @@
 void resetWiFiSettings() {
-  tickerBack.attach_ms(256, tickBack);
+  tickerBack.attach_ms(512, tickBack);
   Serial.println("WiFi reset by special PIN");
   WiFi.disconnect(true);
   delay(2000);
@@ -14,7 +14,9 @@ bool setupWiFiManager() {
   wifiManager.setMinimumSignalQuality(33);
   wifiManager.setRemoveDuplicateAPs(true);
   wifiManager.setDebugOutput(false);
+  wifiManager.setConfigPortalTimeout(300);
   wifiManager.setTimeout(300);
+  wifiManager.setConnectTimeout(300);
   wifiManager.setCustomHeadElement("<style>html{background:#fb7906};</style>");
   
   ////STATIC IP (if needed)

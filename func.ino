@@ -2,7 +2,7 @@
 int bufferCount() 
 {
   int countLine = 0;
-  bufferFile = SPIFFS.open("/data.buff", "r");
+  File bufferFile = SPIFFS.open("/data.buff", "r");
   char buffer[256];
   while (bufferFile.available()) {
     int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
@@ -14,7 +14,7 @@ int bufferCount()
 }
 
 bool bufferWrite(String urlString) {
-  bufferFile = SPIFFS.open("/data.buff", "a+");
+  File bufferFile = SPIFFS.open("/data.buff", "a+");
   if (bufferFile) {
     Serial.println("Write to local buffer file...");
     Serial.println(urlString);
@@ -28,39 +28,62 @@ bool bufferWrite(String urlString) {
 }
 
 int bufferReadAndSend() {
-  bufferFile = SPIFFS.open("/data.buff", "r");
+  File bufferFile = SPIFFS.open("/data.buff", "r+");
   if (bufferFile) {
+    int until = bufferCount();
+    
+    HTTPClient http; 
+    http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
+    http.addHeader("Content-Type", "text/plain");
+    http.setTimeout(15000);
+    http.setUserAgent(deviceName);
+    
     bufferFile.seek(0, SeekSet);
     Serial.print("Buffer size: ");
     Serial.print(bufferFile.size());
     Serial.println();
 
+    int rowsCountAll = 0;
+    int rowsCount = 0;
     String toSend = "";
-    char buffer[256];
+    char buffer[128];
     while (bufferFile.available()) {
+      Serial.println("row");
       int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
       buffer[l] = 0;
-      toSend += buffer + String("\n");
+
+      toSend += buffer + String("\n ");
+      rowsCount++;
+      rowsCountAll++;
+      
+      if (rowsCount >= 10) {
+        HTTPClient http; 
+        http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
+        http.setReuse(false);
+        http.addHeader("Content-Type", "text/plain");
+        http.setTimeout(15000);
+        http.setUserAgent(deviceName);
+    
+        Serial.println("SEND");
+        int httpCode = http.POST(toSend);
+        Serial.println(httpCode);
+        http.end();
+        if (httpCode == HTTP_CODE_OK) {
+          Serial.println("http3");
+          toSend = "";
+          rowsCount = 0;
+
+          if (rowsCountAll >= until) {
+            bufferFile.close();
+            SPIFFS.remove("/data.buff");
+            return true;
+          }
+        }
+      }
     }
-
-    Serial.println(toSend);
-    Serial.println();
-
-    bufferFile.close();
-
-    HTTPClient http; 
-    http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
-    http.addHeader("Content-Type", "text/plain");
-  
-    int httpCode = http.POST(toSend);
-    if (httpCode == 200) {
-      SPIFFS.remove("/buffer.txt");
-    }
-    String payload = http.getString();
-    Serial.print(String(httpCode) + ": ");
-    Serial.println(payload);
-    http.end();
   }
+
+  return -1;
 }
 
 // LEDs functions

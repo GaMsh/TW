@@ -1,5 +1,5 @@
 void checkFirmwareUpdate() {
-  if (!CHIP_TEST && !NO_INTERNET) {
+  if (!NO_AUTO_UPDATE && !NO_INTERNET) {
     t_httpUpdate_return ret = ESPhttpUpdate.update("http://tw.gamsh.ru", DEVICE_FIRMWARE);
     
     switch (ret) {
@@ -29,48 +29,49 @@ boolean callToServer(String urlString) {
   if (NO_INTERNET) {
     NO_INTERNET = false;
 
-    Serial.println("NO INTERNET MODE DEACTIVATED");
-    bufferFile = SPIFFS.open("/buffer.txt", "r");
-    bufferFile.seek(0, SeekSet);
-    Serial.print("Buffer size: ");
-    Serial.print(bufferFile.size());
-    Serial.println();
+    return bufferReadAndSend();
 
-    String toSend = "";
-    char buffer[256];
-    while (bufferFile.available()) {
-      int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
-      buffer[l] = 0;
-      toSend += buffer + String("\n");
-    }
-
-    Serial.println(toSend);
-    Serial.println();
-    
-    bufferFile.close();
-
-    HTTPClient http; 
-    http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
-    http.addHeader("Content-Type", "text/plain");
-  
-    int httpCode = http.POST(toSend);
-    String payload = http.getString();
-    Serial.print(String(httpCode) + ": ");
-    Serial.println(payload);
-    http.end();
-
-    return true;
+//    Serial.println("NO INTERNET MODE DEACTIVATED");
+//    bufferFile = SPIFFS.open("/buffer.txt", "r");
+//    bufferFile.seek(0, SeekSet);
+//    Serial.print("Buffer size: ");
+//    Serial.print(bufferFile.size());
+//    Serial.println();
+//
+//    String toSend = "";
+//    char buffer[256];
+//    while (bufferFile.available()) {
+//      int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
+//      buffer[l] = 0;
+//      toSend += buffer + String("\n");
+//    }
+//
+//    Serial.println(toSend);
+//    Serial.println();
+//    
+//    bufferFile.close();
+//
+//    HTTPClient http; 
+//    http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
+//    http.addHeader("Content-Type", "text/plain");
+//  
+//    int httpCode = http.POST(toSend);
+//    String payload = http.getString();
+//    Serial.print(String(httpCode) + ": ");
+//    Serial.println(payload);
+//    http.end();
   }
     
   Serial.println(urlString);
   
   HTTPClient http; 
   http.begin("https://iot.osmo.mobi/send", OsMoSSLFingerprint);
+  http.setUserAgent(deviceName);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
   int httpCode = http.POST(urlString);
   Serial.println("Sending to server...");
-  if (httpCode != 200) {
+  if (httpCode != HTTP_CODE_OK) {
     NO_SERVER = true;
     bufferWrite(urlString);
     return false;
@@ -92,21 +93,23 @@ boolean writeLocalBuffer(String urlString) {
     NO_INTERNET = true;
 
     Serial.println("NO INTERNET MODE ACTIVATED");
-    bufferFile = SPIFFS.open("/buffer.txt", "a+");
+//    File bufferFile = SPIFFS.open("/buffer.txt", "a+");
   }
-  if (bufferFile) {
-    Serial.println("Write to local buffer file...");
-    Serial.println(urlString);
+//  if (bufferFile) {
+//    Serial.println("Write to local buffer file...");
+//    Serial.println(urlString);
+
+    return bufferWrite(urlString);
     
-    bufferFile.println(urlString);
-  } else {
-    Serial.println("Buffer file open failed");
-    return false;
-  }
+//    bufferFile.println(urlString);
+//  } else {
+//    Serial.println("Buffer file open failed");
+//    return false;
+//  }
 
-  return true;
+//  return true;
 }
 
-String readAndClearLocalBuffer() {
-
-}
+//String readAndClearLocalBuffer() {
+//
+//}

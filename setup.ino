@@ -14,7 +14,7 @@ void setup()
 
 // reset wifi RESET_WIFI pin to GROUND
   int resetCycle = 0;
-  tickerBack.attach_ms(20, tickBack);
+  tickerBack.attach_ms(35, tickBack);
   while (resetCycle < 50) {
     MODE_RESET_WIFI = digitalRead(RESET_WIFI);
     if (MODE_RESET_WIFI == LOW) {
@@ -33,9 +33,8 @@ void setup()
 
   if (!setupWiFiManager()) {
     Serial.println("failed to connect and hit timeout");
-//    ESP.reset();
+    delay(30000);
     ESP.restart();
-    delay(1000);
   } else {
     Serial.println("connected...yeey :)");
     NO_INTERNET = false;
@@ -86,9 +85,10 @@ void setup()
 
     HTTPClient http;
     http.begin("http://iot.osmo.mobi/device");
+    http.setUserAgent(deviceName);
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     int httpCode = http.POST(postData);
-    if (httpCode != 200 && !CHIP_TEST) {
+    if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
         tickerBack.attach_ms(200, tickBack);
         ticker.attach_ms(500, tickFront, MAIN_MODE_OFFLINE);
         
@@ -98,7 +98,7 @@ void setup()
         }
     }
     Serial.println("get device config and set env, result: " + String(httpCode));
-    if (httpCode == 200) {
+    if (httpCode == HTTP_CODE_OK) {
       NO_SERVER = false;
     }
     
@@ -136,8 +136,9 @@ void setup()
     tickerBack.attach_ms(100, tickBack);
 
     if (bufferCount() > 0) {
-      Serial.println("");
+      Serial.println();
       Serial.println("Buffer count: " + bufferCount());
+      MODE_SEND_BUFFER = 1;
     }
 
     if (!CHIP_TEST) {
