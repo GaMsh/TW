@@ -39,8 +39,8 @@ enum TempUnit
 File bufferFile;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
-#define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков
-#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA
+#define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
+#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
 #define MAIN_MODE_OFFLINE 200 // система работает, но испытывает проблемы с передачей данных
@@ -56,14 +56,12 @@ int MODE_RESET_WIFI = 0;
 int MODE_SEND_BUFFER = 0;
 
 const char* DEVICE_MODEL = "GaM_TW1";
-const char* DEVICE_REVISION = "oksana"; 
-const char* DEVICE_FIRMWARE = "1.5.0";
+const char* DEVICE_REVISION = "oksik"; 
+const char* DEVICE_FIRMWARE = "1.5.1";
 
 const int RESET_WIFI = 0; // PIN D3
 
-const int LED_EXTERNAL  = 14; // PIN D5
-//const int LED_YELLOW  = 12; // PIN D6
-//const int LED_RED     = 13; // PIN D7
+const int LED_EXTERNAL = 14; // PIN D5
 
 unsigned long previousMillis = SENS_INTERVAL * -2; //Чтобы начинать отправлять данные сразу после запуска
 unsigned long previousMillisReboot = 0;

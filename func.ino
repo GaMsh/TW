@@ -97,16 +97,10 @@ void tickFront(int mode)
   int stateFront = 0;
   switch (mode) {
     case MAIN_MODE_NORMAL:
+    case MAIN_MODE_OFFLINE:
+    case MAIN_MODE_FAIL:
       stateFront = digitalRead(LED_EXTERNAL);
       digitalWrite(LED_EXTERNAL, !stateFront);
-      break;
-    case MAIN_MODE_OFFLINE:
-//      stateFront = digitalRead(LED_YELLOW);
-//      digitalWrite(LED_YELLOW, !stateFront);
-      break;
-    case MAIN_MODE_FAIL:
-//      stateFront = digitalRead(LED_RED);
-//      digitalWrite(LED_RED, !stateFront);
       break;
     default: 
       stateFront = digitalRead(LED_EXTERNAL);

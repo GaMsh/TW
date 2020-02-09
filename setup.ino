@@ -2,9 +2,6 @@ void setup()
 {  
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_EXTERNAL, OUTPUT);
-//  pinMode(LED_YELLOW, OUTPUT);
-//  pinMode(LED_RED, OUTPUT);
-
   pinMode(RESET_WIFI, INPUT);
 
   Serial.begin(SERIAL_BAUD);
@@ -12,7 +9,7 @@ void setup()
     
   Serial.println("Device '" + deviceName + "' is starting...");
 
-// reset wifi RESET_WIFI pin to GROUND
+// reset wifi by RESET_WIFI pin to GROUND
   int resetCycle = 0;
   tickerBack.attach_ms(35, tickBack);
   while (resetCycle < 50) {
@@ -24,7 +21,7 @@ void setup()
     resetCycle++;
     delay(36);
   }
-// reset wifi RESET_WIFI pin to GROUND
+// end reset wifi
   
   WiFi.hostname(deviceName);
   
@@ -36,7 +33,7 @@ void setup()
     delay(30000);
     ESP.restart();
   } else {
-    Serial.println("connected...yeey :)");
+    Serial.println("WiFi network connected");
     NO_INTERNET = false;
 
     if (SPIFFS.begin()) {
@@ -58,10 +55,16 @@ void setup()
     TOKEN = readCfgFile("token");
 
     Serial.println("Syncing time...");
+    int syncSecs = 0;
     configTime(0, 0, "pool.ntp.org");  
     setenv("TZ", "GMT+0", 0);
     while(time(nullptr) <= 100000) {
-      Serial.print(".");
+      if (syncSecs > 15) {
+        return ESP.restart();
+      }
+      
+      Serial.print(" .");
+      syncSecs++;
       delay(1000);
     }
     Serial.println();
