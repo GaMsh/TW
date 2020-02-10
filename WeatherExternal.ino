@@ -29,11 +29,11 @@ Ticker tickerBack;
 HTU21D myHumidity;
 BME280I2C bme;
 
-enum TempUnit
-{
-   TempUnit_Celsius,
-   TempUnit_Fahrenheit
-};
+//enum TempUnit
+//{
+//   TempUnit_Celsius,
+//   TempUnit_Fahrenheit
+//};
 
 // инициализируем файлы
 File bufferFile;
@@ -57,7 +57,7 @@ int MODE_SEND_BUFFER = 0;
 
 const char* DEVICE_MODEL = "GaM_TW1";
 const char* DEVICE_REVISION = "oksik"; 
-const char* DEVICE_FIRMWARE = "1.5.1";
+const char* DEVICE_FIRMWARE = "1.5.2";
 
 const int RESET_WIFI = 0; // PIN D3
 
@@ -83,5 +83,4 @@ void configModeCallback(WiFiManager *myWiFiManager)
   Serial.println(myWiFiManager->getConfigPortalSSID());
   ticker.attach_ms(500, tickBack);
   ticker.attach_ms(1000, tickFront, MAIN_MODE_NORMAL);
-  ticker.attach_ms(500, tickFront, MAIN_MODE_OFFLINE);
 }

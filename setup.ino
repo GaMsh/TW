@@ -96,9 +96,8 @@ void setup()
         ticker.attach_ms(500, tickFront, MAIN_MODE_OFFLINE);
         
         Serial.println("Error init device from OsMo.mobi");
-        while(1) {
-          delay(60000);
-        }
+        delay(20000);
+        return ESP.restart();
     }
     Serial.println("get device config and set env, result: " + String(httpCode));
     if (httpCode == HTTP_CODE_OK) {
