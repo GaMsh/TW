@@ -156,8 +156,8 @@ void setup()
       }
   
       tickOffAll();
-      tickerBack.attach_ms(3000, tickBack);
-      ticker.attach_ms(3000, tickFront, MAIN_MODE_NORMAL);
+      tickerBack.attach_ms(4000, tickBack);
+      ticker.attach_ms(4000, tickFront, MAIN_MODE_NORMAL);
       myHumidity.begin();
     }
 

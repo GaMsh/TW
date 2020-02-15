@@ -30,36 +30,6 @@ boolean callToServer(String urlString) {
     NO_INTERNET = false;
 
     return bufferReadAndSend();
-
-//    Serial.println("NO INTERNET MODE DEACTIVATED");
-//    bufferFile = SPIFFS.open("/buffer.txt", "r");
-//    bufferFile.seek(0, SeekSet);
-//    Serial.print("Buffer size: ");
-//    Serial.print(bufferFile.size());
-//    Serial.println();
-//
-//    String toSend = "";
-//    char buffer[256];
-//    while (bufferFile.available()) {
-//      int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
-//      buffer[l] = 0;
-//      toSend += buffer + String("\n");
-//    }
-//
-//    Serial.println(toSend);
-//    Serial.println();
-//    
-//    bufferFile.close();
-//
-//    HTTPClient http; 
-//    http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
-//    http.addHeader("Content-Type", "text/plain");
-//  
-//    int httpCode = http.POST(toSend);
-//    String payload = http.getString();
-//    Serial.print(String(httpCode) + ": ");
-//    Serial.println(payload);
-//    http.end();
   }
     
   Serial.println(urlString);
@@ -83,7 +53,7 @@ boolean callToServer(String urlString) {
   http.end();
 
   digitalWrite(LED_BUILTIN, LOW);
-  ticker.attach_ms(2000, tickFront, MAIN_MODE_NORMAL);
+  ticker.attach_ms(6000, tickFront, MAIN_MODE_NORMAL);
 
   return true;
 }
@@ -93,23 +63,6 @@ boolean writeLocalBuffer(String urlString) {
     NO_INTERNET = true;
 
     Serial.println("NO INTERNET MODE ACTIVATED");
-//    File bufferFile = SPIFFS.open("/buffer.txt", "a+");
   }
-//  if (bufferFile) {
-//    Serial.println("Write to local buffer file...");
-//    Serial.println(urlString);
-
-    return bufferWrite(urlString);
-    
-//    bufferFile.println(urlString);
-//  } else {
-//    Serial.println("Buffer file open failed");
-//    return false;
-//  }
-
-//  return true;
+  return bufferWrite(urlString);
 }
-
-//String readAndClearLocalBuffer() {
-//
-//}

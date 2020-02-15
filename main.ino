@@ -29,9 +29,6 @@ void loop()
     float t1;
     float h1;
     float p1;
-//    float hi1;
-//    float dp1;
-//    float ah1;
     float t2;
     float h2;
 
@@ -69,9 +66,6 @@ void loop()
       "t1=" + String(t1) + "&" +
       "h1=" + String(h1) + "&" +
       "p1=" + String(p1) + "&" +
-//      "hi1=" + String(hi1) + "&" +
-//      "dp1=" + String(dp1) + "&" +
-//      "ah1=" + String(ah1) + "&" +
       "t2=" + String(t2) + "&" +
       "h2=" + String(h2) + "&" +
       "millis=" + millis() + "&" + 

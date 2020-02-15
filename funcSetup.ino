@@ -14,9 +14,6 @@ bool setupWiFiManager() {
   wifiManager.setMinimumSignalQuality(33);
   wifiManager.setRemoveDuplicateAPs(true);
   wifiManager.setDebugOutput(false);
-  wifiManager.setConfigPortalTimeout(300);
-  wifiManager.setTimeout(300);
-  wifiManager.setConnectTimeout(300);
   wifiManager.setCustomHeadElement("<style>html{background:#fb7906};</style>");
   
   ////STATIC IP (if needed)
