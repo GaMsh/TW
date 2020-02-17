@@ -86,30 +86,30 @@ int bufferReadAndSend() {
 }
 
 // LEDs functions
-void tickBack()
+void tickInternal()
 {
-  int stateBack = digitalRead(BUILTIN_LED);
-  digitalWrite(BUILTIN_LED, !stateBack);
+  int stateIntervalLed = digitalRead(BUILTIN_LED);
+  digitalWrite(BUILTIN_LED, !stateIntervalLed);
 }
 
-void tickFront(int mode)
+void tickExternal(int mode)
 {
-  int stateFront = 0;
+  int stateExternalLed = 0;
   switch (mode) {
     case MAIN_MODE_NORMAL:
     case MAIN_MODE_OFFLINE:
     case MAIN_MODE_FAIL:
-      stateFront = digitalRead(LED_EXTERNAL);
-      digitalWrite(LED_EXTERNAL, !stateFront);
+      stateExternalLed = digitalRead(LED_EXTERNAL);
+      digitalWrite(LED_EXTERNAL, !stateExternalLed);
       break;
     default: 
-      stateFront = digitalRead(LED_EXTERNAL);
-      digitalWrite(LED_EXTERNAL, !stateFront);
+      stateExternalLed = digitalRead(LED_EXTERNAL);
+      digitalWrite(LED_EXTERNAL, !stateExternalLed);
   }
 }
 
 void tickOffAll()
 {
-  ticker.detach();
-  tickerBack.detach();
+  ticker1.detach();
+  ticker2.detach();
 }

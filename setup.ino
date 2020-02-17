@@ -9,28 +9,35 @@ void setup()
     
   Serial.println("Device '" + deviceName + "' is starting...");
 
-// reset wifi by RESET_WIFI pin to GROUND
-  int resetCycle = 0;
-  tickerBack.attach_ms(35, tickBack);
-  while (resetCycle < 50) {
-    MODE_RESET_WIFI = digitalRead(RESET_WIFI);
-    if (MODE_RESET_WIFI == LOW) {
-      resetWiFiSettings();
-      break;
+  if (WiFi.SSID() != "") {
+    Serial.print("Current Saved WiFi SSID: ");
+    Serial.println(WiFi.SSID());
+
+  // reset wifi by RESET_WIFI pin to GROUND
+    int resetCycle = 0;
+    ticker1.attach_ms(35, tickInternal);
+    while (resetCycle < 50) {
+      MODE_RESET_WIFI = digitalRead(RESET_WIFI);
+      if (MODE_RESET_WIFI == LOW) {
+        resetWiFiSettings();
+        break;
+      }
+      resetCycle++;
+      delay(36);
     }
-    resetCycle++;
-    delay(36);
+    // end reset wifi
+  } else {
+    Serial.println("We dont have saved WiFi settings, need configure");
   }
-// end reset wifi
   
   WiFi.hostname(deviceName);
   
-  tickerBack.attach_ms(100, tickBack);
-  ticker.attach_ms(100, tickFront, MAIN_MODE_OFFLINE);
+  ticker1.attach_ms(100, tickInternal);
+  ticker2.attach_ms(100, tickExternal, MAIN_MODE_OFFLINE);
 
   if (!setupWiFiManager()) {
     Serial.println("failed to connect and hit timeout");
-    delay(30000);
+    delay(15000);
     ESP.restart();
   } else {
     Serial.println("WiFi network connected");
@@ -92,11 +99,11 @@ void setup()
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     int httpCode = http.POST(postData);
     if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
-        tickerBack.attach_ms(200, tickBack);
-        ticker.attach_ms(500, tickFront, MAIN_MODE_OFFLINE);
+        ticker1.attach_ms(200, tickInternal);
+        ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
         
         Serial.println("Error init device from OsMo.mobi");
-        delay(20000);
+        delay(15000);
         return ESP.restart();
     }
     Serial.println("get device config and set env, result: " + String(httpCode));
@@ -108,8 +115,6 @@ void setup()
     deserializeJson(doc, payload);
     http.end();
 
-    Serial.print(F("Interval: "));
-    Serial.println(doc["interval"].as<int>());
     if (doc["interval"].as<int>() > 4) {
       int SENS_INTERVAL_NEW = doc["interval"].as<int>() * 1000;
       if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
@@ -118,37 +123,39 @@ void setup()
       }
     }
 
-    Serial.print("SHA-1 FingerPrint for SSL KEY: ");
-    Serial.println(doc["tlsFinger"].as<String>());
     if (OsMoSSLFingerprint != doc["tlsFinger"].as<String>()) {
       OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
       writeCfgFile("ssl", OsMoSSLFingerprint);
       Serial.print("tlsFinger was updated in SPIFFS");
     }
 
-    Serial.print("TOKEN: ");
-    Serial.println(doc["token"].as<String>());
     if (TOKEN != doc["token"].as<String>()) {
       TOKEN = doc["token"].as<String>();
       writeCfgFile("token", TOKEN);
       Serial.print("Token was updated in SPIFFS");
     }
 
+//    if (LED_BRIGHT != doc["led_bright"].as<int>()) {
+//      LED_BRIGHT = doc["led_bright"].as<int>();
+//      writeCfgFile("led_bright", TOKEN);
+//      Serial.print("Led intersivity was updated in SPIFFS");
+//    }
+
     tickOffAll();
-    tickerBack.attach_ms(100, tickBack);
+    ticker1.attach_ms(100, tickInternal);
 
     if (bufferCount() > 0) {
       Serial.println();
       Serial.println("Buffer count: " + bufferCount());
-      MODE_SEND_BUFFER = 1;
+      MODE_SEND_BUFFER = true;
     }
 
     if (!CHIP_TEST) {
       Wire.begin();
 
       tickOffAll();
-      tickerBack.attach_ms(2000, tickBack);
-      ticker.attach_ms(2000, tickFront, MAIN_MODE_NORMAL);
+      ticker1.attach_ms(2000, tickInternal);
+      ticker2.attach_ms(2000, tickExternal, MAIN_MODE_NORMAL);
       while(!bme.begin())
       {
         Serial.println("Could not find BME-280 sensor!");
@@ -156,8 +163,8 @@ void setup()
       }
   
       tickOffAll();
-      tickerBack.attach_ms(4000, tickBack);
-      ticker.attach_ms(4000, tickFront, MAIN_MODE_NORMAL);
+      ticker1.attach_ms(4000, tickInternal);
+      ticker2.attach_ms(4000, tickExternal, MAIN_MODE_NORMAL);
       myHumidity.begin();
     }
 
@@ -167,4 +174,7 @@ void setup()
   tickOffAll();
 
   digitalWrite(BUILTIN_LED, HIGH);
+  analogWrite(LED_EXTERNAL, 255);
+  delay(1000);
+  analogWrite(LED_EXTERNAL, 25);
 }

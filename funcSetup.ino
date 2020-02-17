@@ -1,5 +1,5 @@
 void resetWiFiSettings() {
-  tickerBack.attach_ms(512, tickBack);
+  ticker1.attach_ms(512, tickInternal);
   Serial.println("WiFi reset by special PIN");
   WiFi.disconnect(true);
   delay(2000);
@@ -25,7 +25,15 @@ bool setupWiFiManager() {
 //  wifiManager.setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn, IPAddress dns1, IPAddress dns2)
   ////STATIC IP (if needed)
 
-  return wifiManager.autoConnect(deviceName.c_str());
+  if (wifiManager.autoConnect()) {
+    return true;
+  }
+
+  if (WiFi.SSID() == "") {
+    wifiManager.startConfigPortal(deviceName.c_str());
+  }
+
+  return false;
 }
 
 String readCfgFile(String configVar) {

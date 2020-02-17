@@ -19,7 +19,9 @@ void checkFirmwareUpdate() {
 
 void mainProcess(String urlString) {
   if (WiFi.status() == WL_CONNECTED) {
+    analogWrite(LED_EXTERNAL, 75);
     callToServer(urlString);
+    analogWrite(LED_EXTERNAL, 5);
   } else {
     writeLocalBuffer(urlString);
   }
@@ -52,8 +54,8 @@ boolean callToServer(String urlString) {
   Serial.println(payload);
   http.end();
 
-  digitalWrite(LED_BUILTIN, LOW);
-  ticker.attach_ms(6000, tickFront, MAIN_MODE_NORMAL);
+//  digitalWrite(LED_BUILTIN, LOW);
+//  ticker2.attach_ms(6000, tickExternal, MAIN_MODE_NORMAL);
 
   return true;
 }

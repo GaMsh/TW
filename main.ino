@@ -2,27 +2,27 @@ void loop()
 {
   unsigned long currentMillis = millis();
 
-  if (!CHIP_TEST) {
-    if (currentMillis - previousMillisReboot > REBOOT_INTERVAL) {
-      Serial.println("It`s time to reboot");
-      if (!NO_INTERNET && !NO_SERVER) { // && BUFFER_COUNT == 0) {
-        ESP.restart();
-      } else {
-        Serial.println("But it`s impossible, no internet connection");
+  if (currentMillis - previousMillis >= SENS_INTERVAL) {
+    if (!CHIP_TEST) {
+      if (currentMillis - previousMillisReboot > REBOOT_INTERVAL) {
+        Serial.println("It`s time to reboot");
+        if (!NO_INTERNET && !NO_SERVER) {
+          ESP.restart();
+        } else {
+          Serial.println("But it`s impossible, no internet connection");
+        }
       }
     }
-  }
 
-  if (currentMillis - previousMillis >= SENS_INTERVAL) {
-    ticker.detach();
-    digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(LED_EXTERNAL, LOW);
+    tickOffAll();
+//    digitalWrite(LED_BUILTIN, HIGH);
+//    digitalWrite(LED_EXTERNAL, HIGH);
     
     previousMillis = currentMillis;
 
     if (MODE_SEND_BUFFER) {
       if (bufferReadAndSend()) {
-        MODE_SEND_BUFFER = 0;
+        MODE_SEND_BUFFER = false;
       }
     }
 
@@ -41,7 +41,6 @@ void loop()
     }
   
     ///////////
-
     if (CHIP_TEST) {
       p1 = 760.25;
       t1 = 25.2;
