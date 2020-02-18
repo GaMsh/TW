@@ -48,9 +48,9 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 
 int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 
-const char* DEVICE_MODEL = "GaM_TW1.2";
+const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "oxygen"; 
-const char* DEVICE_FIRMWARE = "1.6.0";
+const char* DEVICE_FIRMWARE = "1.6.1";
 
 const int RESET_WIFI = 0; // PIN D3
 

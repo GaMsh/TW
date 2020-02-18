@@ -30,7 +30,8 @@ bool setupWiFiManager() {
   }
 
   if (WiFi.SSID() == "") {
-    wifiManager.startConfigPortal(deviceName.c_str());
+    String wifiPortalSsid = deviceName + "_SETUP";
+    wifiManager.startConfigPortal(wifiPortalSsid.c_str());
   }
 
   return false;

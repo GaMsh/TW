@@ -99,12 +99,12 @@ void setup()
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     int httpCode = http.POST(postData);
     if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
-        ticker1.attach_ms(200, tickInternal);
-        ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-        
-        Serial.println("Error init device from OsMo.mobi");
-        delay(15000);
-        return ESP.restart();
+      ticker1.attach_ms(200, tickInternal);
+      ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
+      
+      Serial.println("Error init device from OsMo.mobi");
+      delay(15000);
+      return ESP.restart();
     }
     Serial.println("get device config and set env, result: " + String(httpCode));
     if (httpCode == HTTP_CODE_OK) {
@@ -172,9 +172,9 @@ void setup()
   }
 
   tickOffAll();
-
-  digitalWrite(BUILTIN_LED, HIGH);
+  
   analogWrite(LED_EXTERNAL, 255);
-  delay(1000);
+  delay(500);
+  digitalWrite(BUILTIN_LED, HIGH);
   analogWrite(LED_EXTERNAL, 25);
 }
