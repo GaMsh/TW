@@ -2,7 +2,7 @@ void setup()
 {  
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_EXTERNAL, OUTPUT);
-  pinMode(RESET_WIFI, INPUT);
+  pinMode(RESET_WIFI, INPUT_PULLUP);
 
   Serial.begin(SERIAL_BAUD);
   while(!Serial) {}
@@ -13,7 +13,7 @@ void setup()
     Serial.print("Current Saved WiFi SSID: ");
     Serial.println(WiFi.SSID());
 
-  // reset wifi by RESET_WIFI pin to GROUND
+    // reset wifi by RESET_WIFI pin to GROUND
     int resetCycle = 0;
     ticker1.attach_ms(35, tickInternal);
     while (resetCycle < 50) {

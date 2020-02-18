@@ -32,7 +32,7 @@ BME280I2C bme;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
-#define NO_AUTO_UPDATE 1 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
+#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
 #define MAIN_MODE_OFFLINE 200 // система работает, но испытывает проблемы с передачей данных
@@ -48,7 +48,7 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 
 int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 
-const char* DEVICE_MODEL = "GaM_TW1";
+const char* DEVICE_MODEL = "GaM_TW1.2";
 const char* DEVICE_REVISION = "oxygen"; 
 const char* DEVICE_FIRMWARE = "1.6.0";
 

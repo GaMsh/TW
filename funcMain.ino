@@ -19,9 +19,9 @@ void checkFirmwareUpdate() {
 
 void mainProcess(String urlString) {
   if (WiFi.status() == WL_CONNECTED) {
-    analogWrite(LED_EXTERNAL, 75);
+    analogWrite(LED_EXTERNAL, 33);
     callToServer(urlString);
-    analogWrite(LED_EXTERNAL, 5);
+    analogWrite(LED_EXTERNAL, 3);
   } else {
     writeLocalBuffer(urlString);
   }
@@ -66,5 +66,6 @@ boolean writeLocalBuffer(String urlString) {
 
     Serial.println("NO INTERNET MODE ACTIVATED");
   }
+
   return bufferWrite(urlString);
 }
