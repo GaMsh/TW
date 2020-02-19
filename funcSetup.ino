@@ -1,3 +1,20 @@
+void getTimeFromInternet() {
+  Serial.println("Syncing time...");
+  int syncSecs = 0;
+  configTime(0, 0, "pool.ntp.org");  
+  setenv("TZ", "GMT+0", 0);
+  while(time(nullptr) <= 100000) {
+    if (syncSecs > 15) {
+      return ESP.restart();
+    }
+    
+    Serial.print(" .");
+    syncSecs++;
+    delay(1000);
+  }
+  Serial.println();
+}
+
 void resetWiFiSettings() {
   ticker1.attach_ms(512, tickInternal);
   Serial.println("WiFi reset by special PIN");
@@ -6,6 +23,29 @@ void resetWiFiSettings() {
   ESP.reset();
   delay(1000);
   ESP.restart();
+}
+
+void checkWiFiConfiguration() {
+  if (WiFi.SSID() != "") {
+    Serial.print("Current Saved WiFi SSID: ");
+    Serial.println(WiFi.SSID());
+
+    // reset wifi by RESET_WIFI pin to GROUND
+    int resetCycle = 0;
+    ticker1.attach_ms(35, tickInternal);
+    while (resetCycle < 50) {
+      MODE_RESET_WIFI = digitalRead(RESET_WIFI);
+      if (MODE_RESET_WIFI == LOW) {
+        resetWiFiSettings();
+        break;
+      }
+      resetCycle++;
+      delay(36);
+    }
+    // end reset wifi
+  } else {
+    Serial.println("We dont have saved WiFi settings, need configure");
+  }
 }
 
 bool setupWiFiManager() {

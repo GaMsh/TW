@@ -39,7 +39,8 @@ BME280I2C bme;
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, система не может функционировать без вмешательства прямых рук
 
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
-int REBOOT_INTERVAL = 2 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети
+int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
+int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
@@ -50,7 +51,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "oxygen"; 
-const char* DEVICE_FIRMWARE = "1.6.1";
+const char* DEVICE_FIRMWARE = "1.6.2";
 
 const int RESET_WIFI = 0; // PIN D3
 
@@ -58,12 +59,13 @@ const int LED_EXTERNAL = 14; // PIN D5
 
 unsigned long previousMillis = SENS_INTERVAL * -2; // Чтобы начинать отправлять данные сразу после запуска
 unsigned long previousMillisReboot = 0;
+unsigned long previousMillisConfig = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 
 String OsMoSSLFingerprint = ""; //69 3B 2D 26 B2 A7 96 5E 10 E4 2F 84 63 56 CE ED E2 EC DA A3
 String TOKEN = "";
-int LED_BRIGHT = 255;
+//int LED_BRIGHT = 255;
 
 int bytesWriten = 0;
 
