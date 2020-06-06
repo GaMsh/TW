@@ -47,26 +47,31 @@ bool getDeviceConfiguration() {
     if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
       SENS_INTERVAL = SENS_INTERVAL_NEW;
       writeCfgFile("interval", doc["interval"].as<String>());
+      Serial.println("Interval was updated in SPIFFS");
     }
   }
 
   if (OsMoSSLFingerprint != doc["tlsFinger"].as<String>()) {
     OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
     writeCfgFile("ssl", OsMoSSLFingerprint);
-    Serial.print("tlsFinger was updated in SPIFFS");
+    Serial.println("tlsFinger was updated in SPIFFS");
   }
 
   if (TOKEN != doc["token"].as<String>()) {
     TOKEN = doc["token"].as<String>();
     writeCfgFile("token", TOKEN);
-    Serial.print("Token was updated in SPIFFS");
+    Serial.println("Token was updated in SPIFFS");
   }
 
-//  if (LED_BRIGHT != doc["led_bright"].as<int>()) {
-//    LED_BRIGHT = doc["led_bright"].as<int>();
-//    writeCfgFile("led_bright", TOKEN);
-//    Serial.print("Led intersivity was updated in SPIFFS");
-//  }
+  if (doc["led_bright"].as<int>() > 0) {
+    int LED_BRIGHT_NEW = doc["led_bright"].as<int>();
+    if (LED_BRIGHT != LED_BRIGHT_NEW) {
+      LED_BRIGHT = LED_BRIGHT_NEW;
+      writeCfgFile("led_bright", doc["led_bright"].as<String>());
+      Serial.println("Led intersivity was updated in SPIFFS");
+    }
+  }
+
   return true;
 }
 

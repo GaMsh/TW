@@ -29,6 +29,7 @@ void mainProcess() {
   float t1;
   float h1;
   float p1;
+  
   // GY-21
   float t2;
   float h2;
@@ -45,13 +46,14 @@ void mainProcess() {
     bme.read(p1, t1, h1, tempUnit, presUnit);
     p1 = p1 / 133.3224;
   }
+  
   // GY-21
   if (CHIP_TEST) {
     t2 = 20.5;
     h2 = 60.25;
   } else {
     t2 = myHumidity.readTemperature();
-    h2 = myHumidity.readHumidity();
+    h2 = myHumidity.readCompensatedHumidity();
   }
 
   time_t now = time(nullptr);
@@ -89,13 +91,13 @@ void checkFirmwareUpdate() {
 
 void actionDo(String urlString) {
   if (WiFi.status() == WL_CONNECTED) {
-    analogWrite(LED_EXTERNAL, 35);
-    callToServer(urlString);
-    analogWrite(LED_EXTERNAL, 5);
-  } else {
     analogWrite(LED_EXTERNAL, 0);
+    callToServer(urlString);
+    analogWrite(LED_EXTERNAL, LED_BRIGHT);
+  } else {
+    analogWrite(LED_EXTERNAL, LED_BRIGHT);
     writeLocalBuffer(urlString);
-    analogWrite(LED_EXTERNAL, 10);
+    analogWrite(LED_EXTERNAL, 0);
   }
 }
 
@@ -124,9 +126,6 @@ boolean callToServer(String urlString) {
   Serial.print(String(httpCode) + ": ");
   Serial.println(payload);
   http.end();
-
-//  digitalWrite(LED_BUILTIN, LOW);
-//  ticker2.attach_ms(6000, tickExternal, MAIN_MODE_NORMAL);
 
   return true;
 }

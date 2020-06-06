@@ -9,10 +9,6 @@ void loop()
 
     previousMillisConfig = taskConfig(currentMillis, previousMillisConfig);
 
-//    tickOffAll();
-//    digitalWrite(LED_BUILTIN, HIGH);
-//    digitalWrite(LED_EXTERNAL, HIGH);    
-
     mainProcess();
   }
 }

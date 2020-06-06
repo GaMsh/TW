@@ -1,10 +1,10 @@
 void getTimeFromInternet() {
   Serial.println("Syncing time...");
   int syncSecs = 0;
-  configTime(0, 0, "pool.ntp.org");  
+  configTime(0, 0, "europe.pool.ntp.org", "time.nist.gov");  
   setenv("TZ", "GMT+0", 0);
-  while(time(nullptr) <= 100000) {
-    if (syncSecs > 15) {
+  while(time(nullptr) < 1000) {
+    if (syncSecs > 120) {
       return ESP.restart();
     }
     
@@ -55,15 +55,6 @@ bool setupWiFiManager() {
   wifiManager.setRemoveDuplicateAPs(true);
   wifiManager.setDebugOutput(false);
   wifiManager.setCustomHeadElement("<style>html{background:#fb7906};</style>");
-  
-  ////STATIC IP (if needed)
-//  IPAddress ip(192, 168, 0, 125);
-//  IPAddress gateway(192, 168, 0, 1);
-//  IPAddress subnet(255, 255, 255, 0);
-//  IPAddress dns1(8, 8, 8, 8);
-//  IPAddress dns2(8, 8, 4, 4);
-//  wifiManager.setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn, IPAddress dns1, IPAddress dns2)
-  ////STATIC IP (if needed)
 
   if (wifiManager.autoConnect()) {
     return true;

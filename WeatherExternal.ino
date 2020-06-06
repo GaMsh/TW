@@ -10,11 +10,12 @@
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
-// важно знать! используется изменённая библиотека WiFiManager, с небольшими добавками, тюнячками и русским переводом!
+// важно знать! используется изменённая библиотека WiFiManager 0.15, 
+// с русским переводом, блокировкой сброса точки в случае длительного отсуствия и парой баг фиксов
 
 // needed for sensors
 #include <Wire.h>
-#include <SparkFunHTU21D.h>
+#include <HTU21D.h>
 #include <BME280I2C.h>
 #include <EnvironmentCalculations.h>
 
@@ -32,15 +33,16 @@ BME280I2C bme;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
-#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
+#define NO_AUTO_UPDATE 1 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
 #define MAIN_MODE_OFFLINE 200 // система работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, система не может функционировать без вмешательства прямых рук
 
+int LED_BRIGHT = 50; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
 int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
-int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети
+int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять буфер и время
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
@@ -50,8 +52,8 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 
 const char* DEVICE_MODEL = "GaM_TW";
-const char* DEVICE_REVISION = "oxygen"; 
-const char* DEVICE_FIRMWARE = "1.6.2";
+const char* DEVICE_REVISION = "foxxy"; 
+const char* DEVICE_FIRMWARE = "1.7.0";
 
 const int RESET_WIFI = 0; // PIN D3
 
@@ -65,11 +67,8 @@ String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 
 String OsMoSSLFingerprint = ""; //69 3B 2D 26 B2 A7 96 5E 10 E4 2F 84 63 56 CE ED E2 EC DA A3
 String TOKEN = "";
-//int LED_BRIGHT = 255;
 
 int bytesWriten = 0;
-
-
 
 // WifiManager callback
 void configModeCallback(WiFiManager *myWiFiManager) 

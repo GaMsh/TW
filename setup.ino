@@ -39,6 +39,11 @@ void setup()
     if (customSsl) {
       OsMoSSLFingerprint = customSsl;
     }
+
+    int customLedBright = readCfgFile("led_bright").toInt();
+    if (customLedBright > 0) {
+      LED_BRIGHT = customLedBright;
+    }
   
     TOKEN = readCfgFile("token");
 
@@ -78,10 +83,10 @@ void setup()
 
   tickOffAll();
 
-  // Завершаем инициализацию устройства, гасим противный синий светодиод!
+  // Завершаем инициализацию устройства, регулируем яркость светодиода по конфигу
   
   analogWrite(LED_EXTERNAL, 255);
   delay(500);
   digitalWrite(BUILTIN_LED, HIGH);
-  analogWrite(LED_EXTERNAL, 25);
+  analogWrite(LED_EXTERNAL, LED_BRIGHT);
 }
