@@ -53,7 +53,7 @@ void mainProcess() {
     h2 = 60.25;
   } else {
     t2 = myHumidity.readTemperature();
-    h2 = myHumidity.readCompensatedHumidity();
+    h2 = myHumidity.readHumidity();
   }
 
   time_t now = time(nullptr);
@@ -91,13 +91,13 @@ void checkFirmwareUpdate() {
 
 void actionDo(String urlString) {
   if (WiFi.status() == WL_CONNECTED) {
-    analogWrite(LED_EXTERNAL, 0);
+    analogWrite(LED_EXTERNAL, 3);
     callToServer(urlString);
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
   } else {
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
     writeLocalBuffer(urlString);
-    analogWrite(LED_EXTERNAL, 0);
+    analogWrite(LED_EXTERNAL, 3);
   }
 }
 

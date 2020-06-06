@@ -26,20 +26,31 @@
 
 ADC_MODE(ADC_VCC); // чтобы измерять self-voltage level 3.3V
 
+BME280I2C::Settings settings(
+   BME280::OSR_X1,
+   BME280::OSR_X1,
+   BME280::OSR_X1,
+   BME280::Mode_Forced,
+   BME280::StandbyTime_1000ms,
+   BME280::Filter_Off,
+   BME280::SpiEnable_False,
+   BME280I2C::I2CAddr_0x76 // I2C address. I2C specific.
+);
+HTU21D myHumidity;
+BME280I2C bme(settings);
+
 Ticker ticker1;
 Ticker ticker2;
-HTU21D myHumidity;
-BME280I2C bme;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
-#define NO_AUTO_UPDATE 1 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
+#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа в норме
 #define MAIN_MODE_OFFLINE 200 // система работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, система не может функционировать без вмешательства прямых рук
 
-int LED_BRIGHT = 50; // яркость внешнего светодиода в режиме ожидания
+int LED_BRIGHT = 75; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
 int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
 int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять буфер и время
@@ -53,7 +64,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "foxxy"; 
-const char* DEVICE_FIRMWARE = "1.7.0";
+const char* DEVICE_FIRMWARE = "1.7.1";
 
 const int RESET_WIFI = 0; // PIN D3
 
@@ -65,7 +76,7 @@ unsigned long previousMillisConfig = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 
-String OsMoSSLFingerprint = ""; //69 3B 2D 26 B2 A7 96 5E 10 E4 2F 84 63 56 CE ED E2 EC DA A3
+String OsMoSSLFingerprint = "";
 String TOKEN = "";
 
 int bytesWriten = 0;

@@ -91,7 +91,6 @@ int bufferCount()
 }
 
 bool bufferWrite(String urlString) {
-  analogWrite(LED_EXTERNAL, 0);
   File bufferFile = SPIFFS.open("/data.buff", "a+");
   if (bufferFile) {
     Serial.println("Write to local buffer file...");
@@ -99,9 +98,9 @@ bool bufferWrite(String urlString) {
     
     bufferFile.println(urlString);
     bufferFile.close();
-    analogWrite(LED_EXTERNAL, 3);
     return true;
   }
+  
   Serial.println("Buffer file open failed");
   return false;
 }

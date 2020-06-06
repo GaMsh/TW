@@ -47,6 +47,8 @@ void setup()
   
     TOKEN = readCfgFile("token");
 
+    ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
+
     getTimeFromInternet();
 
     getDeviceConfiguration();
