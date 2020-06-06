@@ -8,6 +8,7 @@ void setup()
   while(!Serial) {}
     
   Serial.println("Device '" + deviceName + "' is starting...");
+  Serial.println("Voltage: " + String(ESP.getVcc()));
 
   checkWiFiConfiguration();
   
@@ -21,7 +22,7 @@ void setup()
     delay(15000);
     ESP.restart();
   } else {
-    Serial.println("WiFi network connected");
+    Serial.println("WiFi network connected (" + String(WiFi.RSSI()) + ")");
     NO_INTERNET = false;
 
     if (SPIFFS.begin()) {
