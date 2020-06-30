@@ -9,7 +9,7 @@
 // needed for library WiFiManager
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>          // https://github.com/tzapu/WiFiManager
+#include <MyWiFiManager.h>          // modified https://github.com/tzapu/WiFiManager
 // важно знать! используется изменённая библиотека WiFiManager 0.15, 
 // с русским переводом, блокировкой сброса точки в случае длительного отсуствия и парой баг фиксов
 
@@ -64,7 +64,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "foxxy"; 
-const char* DEVICE_FIRMWARE = "1.7.1";
+const char* DEVICE_FIRMWARE = "1.7.2";
 
 const int RESET_WIFI = 0; // PIN D3
 
@@ -87,6 +87,7 @@ void configModeCallback(WiFiManager *myWiFiManager)
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
   Serial.println(myWiFiManager->getConfigPortalSSID());
+  Serial.println(WiFi.macAddress());
   ticker1.attach_ms(500, tickInternal);
   ticker2.attach_ms(1000, tickExternal, MAIN_MODE_NORMAL);
 }
