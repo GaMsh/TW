@@ -71,7 +71,7 @@ bool setupWiFiManager() {
 String readCfgFile(String configVar) {
   String result = "";
   
-  File file = SPIFFS.open("/" + configVar + ".cfg", "r");
+  File file = LittleFS.open("/" + configVar + ".cfg", "r");
   if (file) {
     result = file.readString();
     Serial.print(configVar + ": ");
@@ -85,7 +85,7 @@ String readCfgFile(String configVar) {
 }
 
 int writeCfgFile(String configVar, String value) {
-  File file = SPIFFS.open("/" + configVar + ".cfg", "w");
+  File file = LittleFS.open("/" + configVar + ".cfg", "w");
   if (file) {
     Serial.println("Write file " + configVar + ".cfg");
     bytesWriten = file.print(value);

@@ -25,12 +25,6 @@ void setup()
     Serial.println("WiFi network connected (" + String(WiFi.RSSI()) + ")");
     NO_INTERNET = false;
 
-    if (SPIFFS.begin()) {
-      Serial.println(F("SPIFFS was mounted"));
-    } else {
-      Serial.println(F("Error while mounting SPIFFS"));
-    }
-
     if (LittleFS.begin()) {
       Serial.println(F("LittleFS was mounted"));
     } else {
