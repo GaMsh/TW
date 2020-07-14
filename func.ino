@@ -47,20 +47,20 @@ bool getDeviceConfiguration() {
     if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
       SENS_INTERVAL = SENS_INTERVAL_NEW;
       writeCfgFile("interval", doc["interval"].as<String>());
-      Serial.println("Interval was updated in SPIFFS");
+      Serial.println("Interval was updated in store");
     }
   }
 
   if (OsMoSSLFingerprint != doc["tlsFinger"].as<String>()) {
     OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
     writeCfgFile("ssl", OsMoSSLFingerprint);
-    Serial.println("tlsFinger was updated in SPIFFS");
+    Serial.println("tlsFinger was updated in store");
   }
 
   if (TOKEN != doc["token"].as<String>()) {
     TOKEN = doc["token"].as<String>();
     writeCfgFile("token", TOKEN);
-    Serial.println("Token was updated in SPIFFS");
+    Serial.println("Token was updated in store");
   }
 
   if (doc["led_bright"].as<int>() > 0) {
@@ -68,7 +68,7 @@ bool getDeviceConfiguration() {
     if (LED_BRIGHT != LED_BRIGHT_NEW) {
       LED_BRIGHT = LED_BRIGHT_NEW;
       writeCfgFile("led_bright", doc["led_bright"].as<String>());
-      Serial.println("Led intersivity was updated in SPIFFS");
+      Serial.println("Led intersivity was updated in store");
     }
   }
 
@@ -79,7 +79,7 @@ bool getDeviceConfiguration() {
 int bufferCount() 
 {
   int countLine = 0;
-  File bufferFile = SPIFFS.open("/data.buff", "r");
+  File bufferFile = LittleFS.open("/data.buff", "r");
   char buffer[256];
   while (bufferFile.available()) {
     int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
@@ -91,7 +91,7 @@ int bufferCount()
 }
 
 bool bufferWrite(String urlString) {
-  File bufferFile = SPIFFS.open("/data.buff", "a+");
+  File bufferFile = LittleFS.open("/data.buff", "a+");
   if (bufferFile) {
     Serial.println("Write to local buffer file...");
     Serial.println(urlString);
@@ -106,7 +106,7 @@ bool bufferWrite(String urlString) {
 }
 
 int bufferReadAndSend() {
-  File bufferFile = SPIFFS.open("/data.buff", "r+");
+  File bufferFile = LittleFS.open("/data.buff", "r+");
   if (bufferFile) {
     int until = bufferCount();
     
@@ -152,7 +152,7 @@ int bufferReadAndSend() {
           if (rowsCountAll >= until) {
             Serial.println("Delete buffer file");
             bufferFile.close();
-            SPIFFS.remove("/data.buff");
+            LittleFS.remove("/data.buff");
             return true;
           }
         }

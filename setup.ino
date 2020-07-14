@@ -30,6 +30,12 @@ void setup()
     } else {
       Serial.println(F("Error while mounting SPIFFS"));
     }
+
+    if (LittleFS.begin()) {
+      Serial.println(F("LittleFS was mounted"));
+    } else {
+      Serial.println(F("Error while mounting LittleFS"));
+    }
   
     int customInterval = readCfgFile("interval").toInt();
     if (customInterval > 1) {

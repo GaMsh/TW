@@ -2,8 +2,8 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
-// needed for local file system SFIFFS working
-#include <FS.h>
+// needed for local file system working
+#include <LittleFS.h>
 #include <ArduinoJson.h>
 
 // needed for library WiFiManager
@@ -63,8 +63,8 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 
 const char* DEVICE_MODEL = "GaM_TW";
-const char* DEVICE_REVISION = "foxxy"; 
-const char* DEVICE_FIRMWARE = "1.7.2";
+const char* DEVICE_REVISION = "bueno"; 
+const char* DEVICE_FIRMWARE = "1.8.0";
 
 const int RESET_WIFI = 0; // PIN D3
 
