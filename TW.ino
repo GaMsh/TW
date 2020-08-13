@@ -1,26 +1,26 @@
 #include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino
-#include <ESP8266HTTPClient.h>
-#include <ESP8266httpUpdate.h>
+#include <ESP8266HTTPClient.h>    // https://github.com/esp8266/Arduino
+#include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 
 // needed for local file system working
-#include <LittleFS.h>
-#include <ArduinoJson.h>
+#include <LittleFS.h>             // https://github.com/esp8266/Arduino
+#include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
 
 // needed for library WiFiManager
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <MyWiFiManager.h>          // modified https://github.com/tzapu/WiFiManager
+#include <DNSServer.h>            // https://github.com/esp8266/Arduino
+#include <ESP8266WebServer.h>     // https://github.com/esp8266/Arduino
+#include <MyWiFiManager.h>        // https://github.com/tzapu/WiFiManager (modified, see local libraries)
 // важно знать! используется изменённая библиотека WiFiManager 0.15, 
-// с русским переводом, блокировкой сброса точки в случае длительного отсутствия её сигнала и парой баг фиксов
+// с русским переводом, блокировкой сброса точки в случае длительного отсуствия и парой баг фиксов
 
 // needed for sensors
-#include <Wire.h>
-#include <HTU21D.h>
-#include <BME280I2C.h>
-#include <EnvironmentCalculations.h>
+#include <Wire.h>                 // https://github.com/esp8266/Arduino
+#include <HTU21D.h>               // https://github.com/enjoyneering/HTU21D
+#include <BME280I2C.h>            // https://github.com/finitespace/BME280
+#include <EnvironmentCalculations.h> // https://github.com/finitespace/BME280
 
 // needed for statuses LED
-#include <Ticker.h>
+#include <Ticker.h>               // https://github.com/esp8266/Arduino
 
 // // // это был длииинный список библиотек для запуска этой штуки :)))
 
@@ -65,7 +65,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "bueno"; 
-const char* DEVICE_FIRMWARE = "1.8.1";
+const char* DEVICE_FIRMWARE = "1.8.1.1";
 
 const int RESET_WIFI = 0; // PIN D3
 
