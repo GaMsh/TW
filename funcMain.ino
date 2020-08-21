@@ -72,7 +72,7 @@ void mainProcess() {
 
 void checkFirmwareUpdate() {
   if (!NO_AUTO_UPDATE && !NO_INTERNET) {
-    t_httpUpdate_return ret = ESPhttpUpdate.update("http://tw.gamsh.ru", DEVICE_FIRMWARE);
+    t_httpUpdate_return ret = ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
     
     switch (ret) {
       case HTTP_UPDATE_FAILED:
@@ -110,7 +110,7 @@ boolean callToServer(String urlString) {
   Serial.println(urlString);
   
   HTTPClient http; 
-  http.begin("https://iot.osmo.mobi/send", OsMoSSLFingerprint);
+  http.begin(OSMO_HTTP_SERVER_SEND, OsMoSSLFingerprint);
   http.setUserAgent(deviceName);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
@@ -127,7 +127,18 @@ boolean callToServer(String urlString) {
   Serial.println(payload);
   http.end();
 
+  udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
+  udp.print(urlString);
+  udp.endPacket();
+
   return true;
+}
+
+void pingServer() {
+  udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
+  udp.print(millis());
+  udp.endPacket();
+  Serial.println("Ping");
 }
 
 boolean writeLocalBuffer(String urlString) {

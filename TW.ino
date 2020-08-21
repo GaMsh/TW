@@ -1,6 +1,7 @@
 #include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino
 #include <ESP8266HTTPClient.h>    // https://github.com/esp8266/Arduino
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
+#include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
 
 // needed for local file system working
 #include <LittleFS.h>             // https://github.com/esp8266/Arduino
@@ -42,6 +43,8 @@ BME280I2C bme(settings);
 Ticker ticker1;
 Ticker ticker2;
 
+WiFiUDP udp;
+
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
 #define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
@@ -50,11 +53,20 @@ Ticker ticker2;
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
-boolean UDP_MODE = false; // переключение устройтсва в режим постоянной связи
+#define TW_UPDATE_SERVER "http://tw.gamsh.ru"
+
+#define OSMO_HTTP_SERVER_DEVICE "http://iot.osmo.mobi/device"
+#define OSMO_HTTP_SERVER_SEND "https://iot.osmo.mobi/send"
+
+#define OSMO_SERVER_HOST "osmo.mobi"
+#define OSMO_SERVER_PORT 24827
+
+boolean UDP_MODE = true; // переключение устройства в режим постоянной связи
+int LOCAL_PORT = 10125;
 int LED_BRIGHT = 75; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
 int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
-int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять буфер и время
+int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможноость накапливать буфер
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
@@ -64,16 +76,16 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 
 const char* DEVICE_MODEL = "GaM_TW";
-const char* DEVICE_REVISION = "bueno"; 
-const char* DEVICE_FIRMWARE = "1.8.1.1";
+const char* DEVICE_REVISION = "kitkat"; 
+const char* DEVICE_FIRMWARE = "2.0.0";
 
-const int RESET_WIFI = 0; // PIN D3
-
-const int LED_EXTERNAL = 14; // PIN D5
+const int RESET_WIFI = 0; // D3
+const int LED_EXTERNAL = 14; // D5
 
 unsigned long previousMillis = SENS_INTERVAL * -2; // Чтобы начинать отправлять данные сразу после запуска
 unsigned long previousMillisReboot = 0;
 unsigned long previousMillisConfig = 0;
+unsigned long previousMillisPing = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 

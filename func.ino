@@ -18,7 +18,7 @@ bool getDeviceConfiguration() {
   DynamicJsonDocument doc(capacity);
 
   HTTPClient http;
-  http.begin("http://iot.osmo.mobi/device");
+  http.begin(OSMO_HTTP_SERVER_DEVICE);
   http.setUserAgent(deviceName);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   int httpCode = http.POST(postData);
@@ -69,6 +69,15 @@ bool getDeviceConfiguration() {
       LED_BRIGHT = LED_BRIGHT_NEW;
       writeCfgFile("led_bright", doc["led_bright"].as<String>());
       Serial.println("Led intersivity was updated in store");
+    }
+  }
+
+  if (doc["local_port"].as<int>() > 0) {
+    int LOCAL_PORT_NEW = doc["local_port"].as<int>();
+    if (LOCAL_PORT != LOCAL_PORT_NEW) {
+      LOCAL_PORT = LOCAL_PORT_NEW;
+      writeCfgFile("local_port", doc["local_port"].as<String>());
+      Serial.println("Local port was updated in store");
     }
   }
 

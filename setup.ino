@@ -45,6 +45,12 @@ void setup()
     if (customLedBright > 0) {
       LED_BRIGHT = customLedBright;
     }
+
+    int customLocalPort = readCfgFile("local_port").toInt();
+    if (customLocalPort > 0) {
+      LOCAL_PORT = customLocalPort;
+    }
+    udp.begin(LOCAL_PORT);
   
     TOKEN = readCfgFile("token");
 

@@ -1,9 +1,9 @@
 void getTimeFromInternet() {
   Serial.println("Syncing time...");
   int syncSecs = 0;
-  configTime(0, 0, "europe.pool.ntp.org", "time.nist.gov");  
+  configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");  
   setenv("TZ", "GMT+0", 0);
-  while(time(nullptr) < 1000) {
+  while(time(nullptr) < 2000) {
     if (syncSecs > 120) {
       return ESP.restart();
     }
