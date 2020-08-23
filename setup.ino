@@ -30,7 +30,8 @@ void setup()
     } else {
       Serial.println(F("Error while mounting LittleFS"));
     }
-  
+
+    ///// Config
     int customInterval = readCfgFile("interval").toInt();
     if (customInterval > 1) {
       SENS_INTERVAL = customInterval * 1000;
@@ -50,8 +51,26 @@ void setup()
     if (customLocalPort > 0) {
       LOCAL_PORT = customLocalPort;
     }
+    ///// UDP
     udp.begin(LOCAL_PORT);
-  
+    
+    ///// UPnP
+    boolean portMappingAdded = false;
+    tinyUPnP.addPortMappingConfig(WiFi.localIP(), LOCAL_PORT, RULE_PROTOCOL_UDP, 30000, deviceName);
+    while (!portMappingAdded) {
+      portMappingAdded = tinyUPnP.commitPortMappings();
+      Serial.println("- ");
+    
+      if (!portMappingAdded) {
+        // for debugging, you can see this in your router too under forwarding or UPnP
+        tinyUPnP.printAllPortMappings();
+        Serial.println(F("This was printed because adding the required port mapping failed"));
+        delay(30000);  // 30 seconds before trying again
+      }
+    }
+    Serial.println("UPnP done");
+
+    ///// Final   
     TOKEN = readCfgFile("token");
 
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
@@ -63,9 +82,9 @@ void setup()
     tickOffAll();
     ticker1.attach_ms(100, tickInternal);
 
-    if (bufferCount() > 0) {
+    if (bufferCount("data") > 0) {
       Serial.println();
-      Serial.println("Buffer count: " + bufferCount());
+      Serial.println("Buffer count: " + bufferCount("data"));
       MODE_SEND_BUFFER = true;
     }
 
@@ -85,9 +104,9 @@ void setup()
       ticker1.attach_ms(4000, tickInternal);
       ticker2.attach_ms(4000, tickExternal, MAIN_MODE_NORMAL);
       myHumidity.begin();
-    }
 
-    checkFirmwareUpdate();
+      checkFirmwareUpdate();
+    }
   }
 
   tickOffAll();

@@ -3,6 +3,9 @@
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 #include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
 
+// for easy remote control
+#include <TinyUPnP.h>             // https://github.com/ofekp/TinyUPnP
+
 // needed for local file system working
 #include <LittleFS.h>             // https://github.com/esp8266/Arduino
 #include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
@@ -33,7 +36,7 @@ BME280I2C::Settings settings(
    BME280::OSR_X1,
    BME280::Mode_Forced,
    BME280::StandbyTime_1000ms,
-   BME280::Filter_Off,
+   BME280::Filter_8,
    BME280::SpiEnable_False,
    BME280I2C::I2CAddr_0x76
 );
@@ -44,6 +47,7 @@ Ticker ticker1;
 Ticker ticker2;
 
 WiFiUDP udp;
+TinyUPnP tinyUPnP(20000);
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
@@ -54,19 +58,19 @@ WiFiUDP udp;
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
 #define TW_UPDATE_SERVER "http://tw.gamsh.ru"
-
 #define OSMO_HTTP_SERVER_DEVICE "http://iot.osmo.mobi/device"
 #define OSMO_HTTP_SERVER_SEND "https://iot.osmo.mobi/send"
-
+#define OSMO_HTTP_SERVER_SEND_PACK "https://iot.osmo.mobi/sendPack"
 #define OSMO_SERVER_HOST "osmo.mobi"
 #define OSMO_SERVER_PORT 24827
 
 boolean UDP_MODE = true; // переключение устройства в режим постоянной связи
 int LOCAL_PORT = 10125;
-int LED_BRIGHT = 75; // яркость внешнего светодиода в режиме ожидания
+int PING_INTERVAL = 2500; // интервал пинга сервера по UDP по умолчанию
+int LED_BRIGHT = 175; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
 int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
-int REBOOT_INTERVAL = 24 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможноость накапливать буфер
+int REBOOT_INTERVAL = 8 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
@@ -77,7 +81,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "kitkat"; 
-const char* DEVICE_FIRMWARE = "2.0.0";
+const char* DEVICE_FIRMWARE = "2.0.0.8";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
@@ -85,7 +89,7 @@ const int LED_EXTERNAL = 14; // D5
 unsigned long previousMillis = SENS_INTERVAL * -2; // Чтобы начинать отправлять данные сразу после запуска
 unsigned long previousMillisReboot = 0;
 unsigned long previousMillisConfig = 0;
-unsigned long previousMillisPing = 0;
+unsigned long previousMillisPing = PING_INTERVAL * -2;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 

@@ -20,7 +20,7 @@ int taskConfig(int currentMillis, int previousMillisConfig) {
 
 void mainProcess() {
   if (MODE_SEND_BUFFER) {
-    if (bufferReadAndSend()) {
+    if (bufferReadAndSend("data")) {
       MODE_SEND_BUFFER = false;
     }
   }
@@ -64,10 +64,24 @@ void mainProcess() {
     "p1=" + String(p1) + "&" +
     "t2=" + String(t2) + "&" +
     "h2=" + String(h2) + "&" +
-    "millis=" + millis() + "&" + 
-    "time=" + String(time(&now));
-  
+    "millis=" + String(millis()) + "&" + 
+    "time=" + String(time(&now));  
   actionDo(urlString);
+
+  String commandString = 
+    "D:" + String(TOKEN) + "|" +
+    "t1" + String(t1) +
+    "h1" + String(h1) +
+    "p1" + String(p1) +
+    "t2" + String(t2) +
+    "h2" + String(h2) +
+    "M" + String(millis()) +
+    "T" + String(time(&now));
+  if (NO_SERVER) {
+    bufferWrite("udp", commandString);
+  } else {
+    callServer(commandString);
+  }
 }
 
 void checkFirmwareUpdate() {
@@ -104,7 +118,8 @@ void actionDo(String urlString) {
 boolean callToServer(String urlString) {
   if (NO_INTERNET) {
     NO_INTERNET = false;
-    return bufferReadAndSend();
+    bufferReadAndSend("udp");
+    return bufferReadAndSend("data");
   }
     
   Serial.println(urlString);
@@ -118,7 +133,7 @@ boolean callToServer(String urlString) {
   Serial.println("Sending to server...");
   if (httpCode != HTTP_CODE_OK) {
     NO_SERVER = true;
-    bufferWrite(urlString);
+    bufferWrite("data", urlString);
     return false;
   }
   NO_SERVER = false;
@@ -127,18 +142,19 @@ boolean callToServer(String urlString) {
   Serial.println(payload);
   http.end();
 
-  udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
-  udp.print(urlString);
-  udp.endPacket();
-
   return true;
 }
 
 void pingServer() {
-  udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
-  udp.print(millis());
-  udp.endPacket();
+  String pingString = "P:" + String(int(millis()/5000)) + "|" + String(WiFi.RSSI());
+  callServer(pingString);
   Serial.println("Ping");
+}
+
+void callServer(String string) {
+  udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
+  udp.print(string);
+  udp.endPacket();
 }
 
 boolean writeLocalBuffer(String urlString) {
@@ -147,5 +163,5 @@ boolean writeLocalBuffer(String urlString) {
     Serial.println("NO INTERNET MODE ACTIVATED");
   }
 
-  return bufferWrite(urlString);
+  return bufferWrite("data", urlString);
 }

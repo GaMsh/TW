@@ -11,7 +11,7 @@ bool getDeviceConfiguration() {
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
     "vcc=" + String(ESP.getVcc()) + "&" +
-    "bufferCount=" + String(bufferCount());
+    "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
   const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
@@ -85,10 +85,10 @@ bool getDeviceConfiguration() {
 }
 
 // bufferFile functions
-int bufferCount() 
+int bufferCount(String filename) 
 {
   int countLine = 0;
-  File bufferFile = LittleFS.open("/data.buff", "r");
+  File bufferFile = LittleFS.open("/" + filename + ".buff", "r");
   char buffer[256];
   while (bufferFile.available()) {
     int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
@@ -99,8 +99,8 @@ int bufferCount()
   return countLine;
 }
 
-bool bufferWrite(String urlString) {
-  File bufferFile = LittleFS.open("/data.buff", "a+");
+bool bufferWrite(String filename, String urlString) {
+  File bufferFile = LittleFS.open("/" + filename + ".buff", "a+");
   if (bufferFile) {
     Serial.println("Write to local buffer file...");
     Serial.println(urlString);
@@ -114,13 +114,13 @@ bool bufferWrite(String urlString) {
   return false;
 }
 
-int bufferReadAndSend() {
-  File bufferFile = LittleFS.open("/data.buff", "r+");
+int bufferReadAndSend(String filename) {
+  File bufferFile = LittleFS.open("/" + filename + ".buff", "r+");
   if (bufferFile) {
-    int until = bufferCount();
+    int until = bufferCount(filename);
     
     HTTPClient http; 
-    http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
+    http.begin(OSMO_HTTP_SERVER_SEND_PACK, OsMoSSLFingerprint);
     http.addHeader("Content-Type", "text/plain");
     http.setTimeout(15000);
     http.setUserAgent(deviceName);
@@ -143,12 +143,12 @@ int bufferReadAndSend() {
       rowsCountAll++;
       
       if (rowsCount >= 10 || rowsCountAll >= until) {
-        HTTPClient http; 
-        http.begin("https://iot.osmo.mobi/sendPack", OsMoSSLFingerprint);
-        http.setReuse(false);
-        http.addHeader("Content-Type", "text/plain");
-        http.setTimeout(15000);
-        http.setUserAgent(deviceName);
+//        HTTPClient http; 
+//        http.begin(OSMO_HTTP_SERVER_SEND_PACK, OsMoSSLFingerprint);
+//        http.setReuse(false);
+//        http.addHeader("Content-Type", "text/plain");
+//        http.setTimeout(15000);
+//        http.setUserAgent(deviceName);
     
         Serial.println("SEND part of buffer");
         int httpCode = http.POST(toSend);

@@ -4,7 +4,7 @@ void getTimeFromInternet() {
   configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");  
   setenv("TZ", "GMT+0", 0);
   while(time(nullptr) < 2000) {
-    if (syncSecs > 120) {
+    if (syncSecs > 60) {
       return ESP.restart();
     }
     
@@ -30,7 +30,7 @@ void checkWiFiConfiguration() {
     Serial.print("Current Saved WiFi SSID: ");
     Serial.println(WiFi.SSID());
 
-    // reset wifi by RESET_WIFI pin to GROUND
+    // reset wifi by connect RESET_WIFI pin to GROUND
     int resetCycle = 0;
     ticker1.attach_ms(35, tickInternal);
     while (resetCycle < 50) {
