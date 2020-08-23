@@ -7,6 +7,7 @@ bool getDeviceConfiguration() {
     "model=" + String(DEVICE_MODEL) + "&" +
     "firmware=" + String(DEVICE_FIRMWARE) + "&"
     "ip=" + WiFi.localIP().toString() + "&" +
+    "port=" + String(LOCAL_PORT) + "&" +
     "mac=" + String(WiFi.macAddress()) + "&" +
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
@@ -142,14 +143,7 @@ int bufferReadAndSend(String filename) {
       rowsCount++;
       rowsCountAll++;
       
-      if (rowsCount >= 10 || rowsCountAll >= until) {
-//        HTTPClient http; 
-//        http.begin(OSMO_HTTP_SERVER_SEND_PACK, OsMoSSLFingerprint);
-//        http.setReuse(false);
-//        http.addHeader("Content-Type", "text/plain");
-//        http.setTimeout(15000);
-//        http.setUserAgent(deviceName);
-    
+      if (rowsCount >= 10 || rowsCountAll >= until) {   
         Serial.println("SEND part of buffer");
         int httpCode = http.POST(toSend);
         Serial.println(httpCode);

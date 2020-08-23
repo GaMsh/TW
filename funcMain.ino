@@ -68,8 +68,7 @@ void mainProcess() {
     "time=" + String(time(&now));  
   actionDo(urlString);
 
-  String commandString = 
-    "D:" + String(TOKEN) + "|" +
+  String string = 
     "t1" + String(t1) +
     "h1" + String(h1) +
     "p1" + String(p1) +
@@ -78,9 +77,9 @@ void mainProcess() {
     "M" + String(millis()) +
     "T" + String(time(&now));
   if (NO_SERVER) {
-    bufferWrite("udp", commandString);
+    bufferWrite("udp", string);
   } else {
-    callServer(commandString);
+    callServer("D", String(TOKEN), string);
   }
 }
 
@@ -146,14 +145,19 @@ boolean callToServer(String urlString) {
 }
 
 void pingServer() {
-  String pingString = "P:" + String(int(millis()/5000)) + "|" + String(WiFi.RSSI());
-  callServer(pingString);
+  callServer("P", String(int(millis()/5000)) + "|" + String(WiFi.RSSI()), "");
   Serial.println("Ping");
 }
 
-void callServer(String string) {
+void callServer(String command, String string, String data) {
   udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
-  udp.print(string);
+  if (data != "") {
+    udp.print(command + ":" + string + "|" + data);
+  } else if (string != "") {
+    udp.print(command + ":" + string);
+  } else {
+    udp.print(command);
+  }
   udp.endPacket();
 }
 

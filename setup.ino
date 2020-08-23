@@ -70,9 +70,10 @@ void setup()
     }
     Serial.println("UPnP done");
 
-    ///// Final   
+    ///// Final
     TOKEN = readCfgFile("token");
-
+    callServer("I", TOKEN, "");
+   
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
 
     getTimeFromInternet();
