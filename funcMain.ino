@@ -84,7 +84,7 @@ void mainProcess() {
 }
 
 void checkFirmwareUpdate() {
-  if (!NO_AUTO_UPDATE && !NO_INTERNET) {
+  if (!NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST) {
     t_httpUpdate_return ret = ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
     
     switch (ret) {

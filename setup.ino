@@ -25,6 +25,8 @@ void setup()
     Serial.println("WiFi network connected (" + String(WiFi.RSSI()) + ")");
     NO_INTERNET = false;
 
+    checkFirmwareUpdate();
+
     if (LittleFS.begin()) {
       Serial.println(F("LittleFS was mounted"));
     } else {
@@ -61,12 +63,12 @@ void setup()
       portMappingAdded = tinyUPnP.commitPortMappings();
       Serial.println("- ");
     
-      if (!portMappingAdded) {
-        // for debugging, you can see this in your router too under forwarding or UPnP
-        tinyUPnP.printAllPortMappings();
-        Serial.println(F("This was printed because adding the required port mapping failed"));
-        delay(30000);  // 30 seconds before trying again
-      }
+//      if (!portMappingAdded) {
+//        // for debugging, you can see this in your router too under forwarding or UPnP
+//        tinyUPnP.printAllPortMappings();
+//        Serial.println(F("This was printed because adding the required port mapping failed"));
+//        delay(30000);  // 30 seconds before trying again
+//      }
     }
     Serial.println("UPnP done");
 
@@ -105,8 +107,6 @@ void setup()
       ticker1.attach_ms(4000, tickInternal);
       ticker2.attach_ms(4000, tickExternal, MAIN_MODE_NORMAL);
       myHumidity.begin();
-
-      checkFirmwareUpdate();
     }
   }
 
