@@ -1,5 +1,5 @@
 // core functions
-bool getDeviceConfiguration() {
+bool getDeviceConfiguration(bool UPnP) {
   StaticJsonDocument<1024> jb;
   String postData = 
     "token=" + TOKEN + "&" +
@@ -12,6 +12,7 @@ bool getDeviceConfiguration() {
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
     "vcc=" + String(ESP.getVcc()) + "&" +
+    "upnp" + String(UPnP) + "&" +
     "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
@@ -81,6 +82,8 @@ bool getDeviceConfiguration() {
       Serial.println("Local port was updated in store");
     }
   }
+
+  WiFi.scanNetworks(true);
 
   return true;
 }

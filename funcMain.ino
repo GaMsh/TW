@@ -13,7 +13,7 @@ void taskRestart(int currentMillis, int previousMillisReboot) {
 
 int taskConfig(int currentMillis, int previousMillisConfig) {
   if (currentMillis - previousMillisConfig > RECONFIG_INTERVAL) {
-    getDeviceConfiguration();
+    getDeviceConfiguration(UPnP);
     return currentMillis;
   }
 }
@@ -57,25 +57,48 @@ void mainProcess() {
   }
 
   time_t now = time(nullptr);
+  
   String urlString = 
-    "token=" + String(TOKEN) + "&" +
-    "t1=" + String(t1) + "&" +
-    "h1=" + String(h1) + "&" +
-    "p1=" + String(p1) + "&" +
-    "t2=" + String(t2) + "&" +
-    "h2=" + String(h2) + "&" +
-    "millis=" + String(millis()) + "&" + 
-    "time=" + String(time(&now));  
+    "token=" + String(TOKEN) + "&";
+  if (!isnan(p1)) {
+    urlString += "t1=" + String(t1) + "&" +
+      "h1=" + String(h1) + "&" +
+      "p1=" + String(p1) + "&";
+    STATUS_BME280_GOOD = true;
+  } else {
+    STATUS_BME280_GOOD = false;
+  }
+  if (t2 != 255 || t2 != 998 || t2 != 999) {
+    urlString += "t2=" + String(t2) + "&" +
+      "h2=" + String(h2) + "&";
+    STATUS_GY21_GOOD = true;
+  } else {
+    STATUS_GY21_GOOD = false;
+  }
+  
+  urlString += "millis=" + String(millis()) + "&" + 
+      "time=" + String(time(&now));  
   actionDo(urlString);
 
-  String string = 
-    "t1" + String(t1) +
-    "h1" + String(h1) +
-    "p1" + String(p1) +
-    "t2" + String(t2) +
-    "h2" + String(h2) +
-    "M" + String(millis()) +
+  String string = "";
+  if (!isnan(p1)) {
+    string += "t1" + String(t1) +
+      "h1" + String(h1) +
+      "p1" + String(p1);
+    STATUS_BME280_GOOD = true;
+  } else {
+    STATUS_BME280_GOOD = false;
+  }
+  if (t2 != 255 || t2 != 998 || t2 != 999) {
+    string += "t2" + String(t2) +
+      "h2" + String(h2);
+    STATUS_GY21_GOOD = true;
+  } else {
+    STATUS_GY21_GOOD = false;
+  }
+  string += "M" + String(millis()) +
     "T" + String(time(&now));
+    
   if (NO_SERVER) {
     bufferWrite("udp", string);
   } else {
@@ -135,7 +158,10 @@ boolean callToServer(String urlString) {
     bufferWrite("data", urlString);
     return false;
   }
-  NO_SERVER = false;
+  if (NO_SERVER) {
+    NO_SERVER = false;
+    bufferReadAndSend("data");
+  }
   String payload = http.getString();
   Serial.print(String(httpCode) + ": ");
   Serial.println(payload);

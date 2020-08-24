@@ -57,11 +57,14 @@ void setup()
     udp.begin(LOCAL_PORT);
     
     ///// UPnP
+    Serial.println("UPnP start");
     boolean portMappingAdded = false;
     tinyUPnP.addPortMappingConfig(WiFi.localIP(), LOCAL_PORT, RULE_PROTOCOL_UDP, 30000, deviceName);
     while (!portMappingAdded) {
       portMappingAdded = tinyUPnP.commitPortMappings();
-      Serial.println("- ");
+      if (portMappingAdded) {
+        UPnP = true;
+      }
     
 //      if (!portMappingAdded) {
 //        // for debugging, you can see this in your router too under forwarding or UPnP
@@ -80,7 +83,7 @@ void setup()
 
     getTimeFromInternet();
 
-    getDeviceConfiguration();
+    getDeviceConfiguration(UPnP);
 
     tickOffAll();
     ticker1.attach_ms(100, tickInternal);
@@ -97,10 +100,17 @@ void setup()
       tickOffAll();
       ticker1.attach_ms(2000, tickInternal);
       ticker2.attach_ms(2000, tickExternal, MAIN_MODE_NORMAL);
+      int tryBMERemaining = 6;
       while(!bme.begin())
       {
+        if (tryBMERemaining == 0) {
+          STATUS_BME280_GOOD = false;
+          break;
+        }
+        
         Serial.println("Could not find BME-280 sensor!");
-        delay(2000);
+        delay(1000);
+        tryBMERemaining--;
       }
   
       tickOffAll();

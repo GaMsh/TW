@@ -64,14 +64,20 @@ TinyUPnP tinyUPnP(15000);
 #define OSMO_SERVER_HOST "osmo.mobi"
 #define OSMO_SERVER_PORT 24827
 
+boolean STATUS_BME280_GOOD = true;
+boolean STATUS_GY21_GOOD = true;
+boolean STATUS_REPORT_SEND = false;
+
 boolean UDP_MODE = true; // переключение устройства в режим постоянной связи
+boolean UPnP = false; // флаг того, что роутер открыл нам прямую связь на порт
 
 int LOCAL_PORT = 10125; // локальный порт для UDP
 int PING_INTERVAL = 6000; // интервал пинга сервера по UDP по умолчанию
-int LED_BRIGHT = 175; // яркость внешнего светодиода в режиме ожидания
+int LED_BRIGHT = 200; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
-int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
 int REBOOT_INTERVAL = 6 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
+int RECONFIG_INTERVAL = 30 * 60000; // интервал обновления конфигурации устройства с сервера
+int REPORT_INTERVAL = 30 * 60000; // интервал повтора отправки отчёта о проблемах (если проблема с чтением данных с сенсоров актуальна)
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
@@ -82,15 +88,16 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "kitkat"; 
-const char* DEVICE_FIRMWARE = "2.0.0.10";
+const char* DEVICE_FIRMWARE = "2.0.0.12";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
 
 unsigned long previousMillis = SENS_INTERVAL * -2; // Чтобы начинать отправлять данные сразу после запуска
-unsigned long previousMillisReboot = 0;
 unsigned long previousMillisConfig = 0;
-unsigned long previousMillisPing = PING_INTERVAL * -2;
+unsigned long previousMillisPing = 0;
+unsigned long previousMillisReboot = 0;
+unsigned long previousMillisReport = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 
