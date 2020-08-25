@@ -105,6 +105,7 @@ String OsMoSSLFingerprint = "";
 String TOKEN = "";
 
 int bytesWriten = 0;
+int pingCount = 0;
 
 // WifiManager callback
 void configModeCallback(WiFiManager *myWiFiManager) 

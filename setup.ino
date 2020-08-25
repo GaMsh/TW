@@ -77,7 +77,7 @@ void setup()
 
     ///// Final
     TOKEN = readCfgFile("token");
-    callServer("I", TOKEN, "");
+    callServer("I", "", "");
    
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
 

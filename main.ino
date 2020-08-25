@@ -34,10 +34,10 @@ void loop()
 
   if (!STATUS_REPORT_SEND) {
     if (!STATUS_BME280_GOOD) {
-      callServer("E", TOKEN, "BME280");
+      callServer("E", "", "BME280");
     }
     if (!STATUS_GY21_GOOD) {
-      callServer("E", TOKEN, "GY21");
+      callServer("E", "", "GY21");
     }
     
     STATUS_REPORT_SEND = true;

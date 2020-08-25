@@ -102,7 +102,7 @@ void mainProcess() {
   if (NO_SERVER) {
     bufferWrite("udp", string);
   } else {
-    callServer("D", String(TOKEN), string);
+    callServer("D", "", string);
   }
 }
 
@@ -171,7 +171,8 @@ boolean callToServer(String urlString) {
 }
 
 void pingServer() {
-  callServer("P", String(int(millis()/5000)) + "|" + String(WiFi.RSSI()), "");
+  pingCount++;
+  callServer("P", String(pingCount), String(WiFi.RSSI()));
   Serial.println("Ping");
 }
 
