@@ -177,13 +177,14 @@ void pingServer() {
 
 void callServer(String command, String string, String data) {
   udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
-  if (data != "") {
-    udp.print(command + ":" + string + "|" + data);
-  } else if (string != "") {
-    udp.print(command + ":" + string);
-  } else {
-    udp.print(command);
+  String query = TOKEN + "__" + command;
+  if (string != "") {
+    query += ":" + string;
   }
+  if (data != "") {
+    query += "|" + data;
+  }
+  udp.print(query);
   udp.endPacket();
 }
 

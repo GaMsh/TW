@@ -88,7 +88,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "kitkat"; 
-const char* DEVICE_FIRMWARE = "2.0.2";
+const char* DEVICE_FIRMWARE = "2.0.3";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
