@@ -12,7 +12,7 @@ bool getDeviceConfiguration(bool UPnP) {
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
     "vcc=" + String(ESP.getVcc()) + "&" +
-    "upnp" + String(UPnP) + "&" +
+    "upnp=" + String(UPnP) + "&" +
     "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
@@ -43,6 +43,13 @@ bool getDeviceConfiguration(bool UPnP) {
   String payload = http.getString();
   deserializeJson(doc, payload);
   http.end();
+
+  int mytime = doc["time"].as<int>();
+  Serial.println(mytime);
+
+  struct timeval tv;
+  tv.tv_sec = mytime;
+  settimeofday(&tv, NULL);
 
   if (doc["interval"].as<int>() > 4) {
     int SENS_INTERVAL_NEW = doc["interval"].as<int>() * 1000;

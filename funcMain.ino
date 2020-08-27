@@ -171,9 +171,12 @@ boolean callToServer(String urlString) {
 }
 
 void pingServer() {
+  tickExternal(0);
   pingCount++;
   callServer("P", String(pingCount), String(WiFi.RSSI()));
   Serial.println("Ping");
+  delay(125);
+  tickExternal(0);
 }
 
 void callServer(String command, String string, String data) {
