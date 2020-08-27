@@ -22,6 +22,7 @@ bool getDeviceConfiguration(bool UPnP) {
   HTTPClient http;
   http.begin(OSMO_HTTP_SERVER_DEVICE);
   http.setUserAgent(deviceName);
+  http.setTimeout(30000);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   int httpCode = http.POST(postData);
   if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
