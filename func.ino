@@ -12,7 +12,7 @@ bool getDeviceConfiguration(bool UPnP) {
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
     "vcc=" + String(ESP.getVcc()) + "&" +
-    "upnp=" + String(UPnP) + "&" +
+    "upnp=" + (int) UPnP + "&" +
     "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 

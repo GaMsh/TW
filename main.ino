@@ -17,14 +17,10 @@ void loop()
 
   if (currentMillis - previousMillis >= SENS_INTERVAL) {
     previousMillis = currentMillis;
-    taskRestart(currentMillis, previousMillisReboot);
-    previousMillisConfig = taskConfig(currentMillis, previousMillisConfig);
+    taskConfig(currentMillis);
+    taskPing(currentMillis);
+    taskRestart(currentMillis);
     mainProcess();
-  }
-
-  if (currentMillis - previousMillisPing >= PING_INTERVAL) {
-    previousMillisPing = currentMillis;
-    pingServer();
   }
 
   if (currentMillis - previousMillisReport >= REPORT_INTERVAL) {

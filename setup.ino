@@ -62,9 +62,6 @@ void setup()
     tinyUPnP.addPortMappingConfig(WiFi.localIP(), LOCAL_PORT, RULE_PROTOCOL_UDP, 30000, deviceName);
     while (!portMappingAdded) {
       portMappingAdded = tinyUPnP.commitPortMappings();
-      if (portMappingAdded) {
-        UPnP = true;
-      }
     
 //      if (!portMappingAdded) {
 //        // for debugging, you can see this in your router too under forwarding or UPnP
@@ -73,11 +70,12 @@ void setup()
 //        delay(30000);  // 30 seconds before trying again
 //      }
     }
+    UPnP = portMappingAdded;
     Serial.println("UPnP done");
 
     ///// Final
     TOKEN = readCfgFile("token");
-    callServer("I", "", "");
+    callServer("I", "I", "I");
    
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
 

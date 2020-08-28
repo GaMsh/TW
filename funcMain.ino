@@ -1,4 +1,18 @@
-void taskRestart(int currentMillis, int previousMillisReboot) {
+void taskConfig(int currentMillis) {
+  if (currentMillis - previousMillisConfig > RECONFIG_INTERVAL) {
+    getDeviceConfiguration(UPnP);
+    previousMillisConfig = currentMillis;
+  }
+}
+
+void taskPing(int currentMillis) {
+  if (currentMillis - previousMillisPing >= PING_INTERVAL) {
+    pingServer();
+    previousMillisPing = currentMillis;
+  }
+}
+
+void taskRestart(int currentMillis) {
   if (!CHIP_TEST) {
     if (currentMillis - previousMillisReboot > REBOOT_INTERVAL) {
       Serial.println("It`s time to reboot");
@@ -8,13 +22,6 @@ void taskRestart(int currentMillis, int previousMillisReboot) {
         Serial.println("But it`s impossible, no internet connection");
       }
     }
-  }
-}
-
-int taskConfig(int currentMillis, int previousMillisConfig) {
-  if (currentMillis - previousMillisConfig > RECONFIG_INTERVAL) {
-    getDeviceConfiguration(UPnP);
-    return currentMillis;
   }
 }
 
