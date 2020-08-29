@@ -69,8 +69,7 @@ void mainProcess(int currentMillis) {
 
   String urlString = "token=" + String(TOKEN) + "&";
   if (!isnan(p1)) {
-    urlString += "t1=" + String(t1) + "&" + "h1=" + String(h1) + "&" +
-                 "p1=" + String(p1) + "&";
+    urlString += "t1=" + String(t1) + "&h1=" + String(h1) + "&p1=" + String(p1) + "&";
     STATUS_BME280_GOOD = true;
   } else {
     STATUS_BME280_GOOD = false;
@@ -110,8 +109,7 @@ void mainProcess(int currentMillis) {
 
 void checkFirmwareUpdate() {
   if (!NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST) {
-    t_httpUpdate_return ret =
-        ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
+    t_httpUpdate_return ret = ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
 
     switch (ret) {
     case HTTP_UPDATE_FAILED:

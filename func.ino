@@ -1,17 +1,19 @@
 // core functions
 bool getDeviceConfiguration(bool UPnP) {
   StaticJsonDocument<1024> jb;
-  String postData =
-      "token=" + TOKEN + "&" + "revision=" + String(DEVICE_REVISION) + "&" +
-      "model=" + String(DEVICE_MODEL) + "&" +
-      "firmware=" + String(DEVICE_FIRMWARE) +
-      "&"
-      "ip=" +
-      WiFi.localIP().toString() + "&" + "port=" + String(LOCAL_PORT) + "&" +
-      "mac=" + String(WiFi.macAddress()) + "&" + "ssid=" + String(WiFi.SSID()) +
-      "&" + "rssi=" + String(WiFi.RSSI()) + "&" +
-      "vcc=" + String(ESP.getVcc()) + "&" + "upnp=" + (int)UPnP + "&" +
-      "bufferCount=" + String(bufferCount("data"));
+  String postData = 
+    "token=" + TOKEN + "&" +
+    "revision=" + String(DEVICE_REVISION) + "&" +
+    "model=" + String(DEVICE_MODEL) + "&" +
+    "firmware=" + String(DEVICE_FIRMWARE) + "&"
+    "ip=" + WiFi.localIP().toString() + "&" +
+    "port=" + String(LOCAL_PORT) + "&" +
+    "mac=" + String(WiFi.macAddress()) + "&" +
+    "ssid=" + String(WiFi.SSID()) + "&" +
+    "rssi=" + String(WiFi.RSSI()) + "&" +
+    "vcc=" + String(ESP.getVcc()) + "&" +
+    "upnp=" + (int) UPnP + "&" +
+    "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
   const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
@@ -183,15 +185,15 @@ void tickInternal() {
 void tickExternal(int mode) {
   int stateExternalLed = 0;
   switch (mode) {
-  case MAIN_MODE_NORMAL:
-  case MAIN_MODE_OFFLINE:
-  case MAIN_MODE_FAIL:
-    stateExternalLed = digitalRead(LED_EXTERNAL);
-    digitalWrite(LED_EXTERNAL, !stateExternalLed);
-    break;
-  default:
-    stateExternalLed = digitalRead(LED_EXTERNAL);
-    digitalWrite(LED_EXTERNAL, !stateExternalLed);
+    case MAIN_MODE_NORMAL:
+    case MAIN_MODE_OFFLINE:
+    case MAIN_MODE_FAIL:
+      stateExternalLed = digitalRead(LED_EXTERNAL);
+      digitalWrite(LED_EXTERNAL, !stateExternalLed);
+      break;
+    default:
+      stateExternalLed = digitalRead(LED_EXTERNAL);
+      digitalWrite(LED_EXTERNAL, !stateExternalLed);
   }
 }
 
