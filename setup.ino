@@ -1,5 +1,5 @@
 void setup() 
-{  
+{
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_EXTERNAL, OUTPUT);
   pinMode(RESET_WIFI, INPUT_PULLUP);
@@ -98,7 +98,7 @@ void setup()
       tickOffAll();
       ticker1.attach_ms(2000, tickInternal);
       ticker2.attach_ms(2000, tickExternal, MAIN_MODE_NORMAL);
-      int tryBMERemaining = 6;
+      int tryBMERemaining = 7;
       while(!bme.begin())
       {
         if (tryBMERemaining == 0) {
@@ -107,7 +107,7 @@ void setup()
         }
         
         Serial.println("Could not find BME-280 sensor!");
-        delay(1000);
+        delay(900);
         tryBMERemaining--;
       }
   
@@ -115,6 +115,14 @@ void setup()
       ticker1.attach_ms(4000, tickInternal);
       ticker2.attach_ms(4000, tickExternal, MAIN_MODE_NORMAL);
       myHumidity.begin();
+      
+      if (myHumidity.readCompensatedHumidity() > 90) {
+        callServer("S", "HEAT", "GY21");
+        Serial.println("Heating started...");
+        myHumidity.setHeater(HTU21D_ON);
+        delay(15000);
+        myHumidity.setHeater(HTU21D_OFF);
+      }
     }
   }
 

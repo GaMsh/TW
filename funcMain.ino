@@ -25,7 +25,9 @@ void taskRestart(int currentMillis) {
   }
 }
 
-void mainProcess() {
+void mainProcess(int currentMillis) {
+  previousMillisPing = currentMillis;
+  
   if (MODE_SEND_BUFFER) {
     if (bufferReadAndSend("data")) {
       MODE_SEND_BUFFER = false;
@@ -60,7 +62,7 @@ void mainProcess() {
     h2 = 60.25;
   } else {
     t2 = myHumidity.readTemperature();
-    h2 = myHumidity.readHumidity();
+    h2 = myHumidity.readCompensatedHumidity();
   }
 
   time_t now = time(nullptr);

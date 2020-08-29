@@ -40,8 +40,8 @@ BME280I2C::Settings settings(
    BME280::SpiEnable_False,
    BME280I2C::I2CAddr_0x76
 );
-HTU21D myHumidity;
 BME280I2C bme(settings);
+HTU21D myHumidity(HTU21D_RES_RH12_TEMP14);
 
 Ticker ticker1;
 Ticker ticker2;
@@ -88,7 +88,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "kitkat"; 
-const char* DEVICE_FIRMWARE = "2.0.4";
+const char* DEVICE_FIRMWARE = "2.0.5";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
