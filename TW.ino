@@ -3,32 +3,32 @@
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 #include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
 
-// for easy remote control
-#include <TinyUPnP.h>             // https://github.com/ofekp/TinyUPnP
+//// экспериментально, ныне не нужно
+//#include <TinyUPnP.h>             // https://github.com/ofekp/TinyUPnP
 
-// needed for local file system working
+// для работы локальной файловой системы
 #include <LittleFS.h>             // https://github.com/esp8266/Arduino
 #include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
 
-// needed for library WiFiManager
+// для удобной настройки WiFi
 #include <DNSServer.h>            // https://github.com/esp8266/Arduino
 #include <ESP8266WebServer.h>     // https://github.com/esp8266/Arduino
-#include <MyWiFiManager.h>        // https://github.com/tzapu/WiFiManager (modified, see local libraries)
-// важно знать! используется изменённая библиотека WiFiManager 0.15, 
+#include <MyWiFiManager.h>        // https://github.com/tzapu/WiFiManager
+// важно знать! используется изменённая библиотека WiFiManager 0.15,
 // с русским переводом, блокировкой сброса точки в случае длительного отсуствия и парой баг фиксов
 
-// needed for sensors
+// для работы датчиков климата
 #include <Wire.h>                 // https://github.com/esp8266/Arduino
 #include <HTU21D.h>               // https://github.com/enjoyneering/HTU21D
 #include <BME280I2C.h>            // https://github.com/finitespace/BME280
-#include <EnvironmentCalculations.h> // https://github.com/finitespace/BME280
+//#include <EnvironmentCalculations.h> // https://github.com/finitespace/BME280
 
-// needed for statuses LED
+// для работы статусных сведодиодов
 #include <Ticker.h>               // https://github.com/esp8266/Arduino
 
-// // // это был длииинный список библиотек для запуска этой штуки :)))
+// // //
 
-ADC_MODE(ADC_VCC); // чтобы измерять self-voltage level 3.3V
+ADC_MODE(ADC_VCC);
 
 BME280I2C::Settings settings(
    BME280::OSR_X1,
@@ -47,7 +47,7 @@ Ticker ticker1;
 Ticker ticker2;
 
 WiFiUDP udp;
-TinyUPnP tinyUPnP(15000);
+//TinyUPnP tinyUPnP(15000);
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
@@ -87,8 +87,8 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 int BUFFER_COUNT = 0; // счётчик строк в буферном файле не отправленных на сервер
 
 const char* DEVICE_MODEL = "GaM_TW";
-const char* DEVICE_REVISION = "kitkat"; 
-const char* DEVICE_FIRMWARE = "2.0.5";
+const char* DEVICE_REVISION = "kitkat";
+const char* DEVICE_FIRMWARE = "2.1.0";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
@@ -107,9 +107,7 @@ String TOKEN = "";
 int bytesWriten = 0;
 int pingCount = 0;
 
-// WifiManager callback
-void configModeCallback(WiFiManager *myWiFiManager) 
-{
+void configModeCallback(WiFiManager *myWiFiManager) {
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
   Serial.println(myWiFiManager->getConfigPortalSSID());

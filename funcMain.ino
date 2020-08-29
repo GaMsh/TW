@@ -27,7 +27,7 @@ void taskRestart(int currentMillis) {
 
 void mainProcess(int currentMillis) {
   previousMillisPing = currentMillis;
-  
+
   if (MODE_SEND_BUFFER) {
     if (bufferReadAndSend("data")) {
       MODE_SEND_BUFFER = false;
@@ -38,7 +38,7 @@ void mainProcess(int currentMillis) {
   float t1;
   float h1;
   float p1;
-  
+
   // GY-21
   float t2;
   float h2;
@@ -47,7 +47,7 @@ void mainProcess(int currentMillis) {
   if (CHIP_TEST) {
     p1 = 760.25;
     t1 = 25.2;
-    h1 = 65.93;    
+    h1 = 65.93;
   } else {
     BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
     BME280::PresUnit presUnit(BME280::PresUnit_Pa);
@@ -55,7 +55,7 @@ void mainProcess(int currentMillis) {
     bme.read(p1, t1, h1, tempUnit, presUnit);
     p1 = p1 / 133.3224;
   }
-  
+
   // GY-21
   if (CHIP_TEST) {
     t2 = 20.5;
@@ -66,48 +66,41 @@ void mainProcess(int currentMillis) {
   }
 
   time_t now = time(nullptr);
-  
-  String urlString = 
-    "token=" + String(TOKEN) + "&";
+
+  String urlString = "token=" + String(TOKEN) + "&";
   if (!isnan(p1)) {
-    urlString += "t1=" + String(t1) + "&" +
-      "h1=" + String(h1) + "&" +
-      "p1=" + String(p1) + "&";
+    urlString += "t1=" + String(t1) + "&" + "h1=" + String(h1) + "&" +
+                 "p1=" + String(p1) + "&";
     STATUS_BME280_GOOD = true;
   } else {
     STATUS_BME280_GOOD = false;
   }
   if (t2 != 255 || t2 != 998 || t2 != 999) {
-    urlString += "t2=" + String(t2) + "&" +
-      "h2=" + String(h2) + "&";
+    urlString += "t2=" + String(t2) + "&" + "h2=" + String(h2) + "&";
     STATUS_GY21_GOOD = true;
   } else {
     STATUS_GY21_GOOD = false;
   }
-  
-  urlString += "millis=" + String(millis()) + "&" + 
-      "time=" + String(time(&now));  
+
+  urlString +=
+      "millis=" + String(millis()) + "&" + "time=" + String(time(&now));
   actionDo(urlString);
 
   String string = "";
   if (!isnan(p1)) {
-    string += "t1" + String(t1) +
-      "h1" + String(h1) +
-      "p1" + String(p1);
+    string += "t1" + String(t1) + "h1" + String(h1) + "p1" + String(p1);
     STATUS_BME280_GOOD = true;
   } else {
     STATUS_BME280_GOOD = false;
   }
   if (t2 != 255 || t2 != 998 || t2 != 999) {
-    string += "t2" + String(t2) +
-      "h2" + String(h2);
+    string += "t2" + String(t2) + "h2" + String(h2);
     STATUS_GY21_GOOD = true;
   } else {
     STATUS_GY21_GOOD = false;
   }
-  string += "M" + String(millis()) +
-    "T" + String(time(&now));
-    
+  string += "M" + String(millis()) + "T" + String(time(&now));
+
   if (NO_SERVER) {
     bufferWrite("udp", string);
   } else {
@@ -117,19 +110,22 @@ void mainProcess(int currentMillis) {
 
 void checkFirmwareUpdate() {
   if (!NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST) {
-    t_httpUpdate_return ret = ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
-    
+    t_httpUpdate_return ret =
+        ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
+
     switch (ret) {
-      case HTTP_UPDATE_FAILED:
-        Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
-        break;
-      case HTTP_UPDATE_NO_UPDATES:
-        Serial.println("[update] Update no Update.");
-        break;
-      case HTTP_UPDATE_OK:
-        Serial.println("[update] Update ok.");
-        ESP.restart();
-        break;
+    case HTTP_UPDATE_FAILED:
+      Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n",
+                    ESPhttpUpdate.getLastError(),
+                    ESPhttpUpdate.getLastErrorString().c_str());
+      break;
+    case HTTP_UPDATE_NO_UPDATES:
+      Serial.println("[update] Update no Update.");
+      break;
+    case HTTP_UPDATE_OK:
+      Serial.println("[update] Update ok.");
+      ESP.restart();
+      break;
     }
   }
 }
@@ -152,10 +148,10 @@ boolean callToServer(String urlString) {
     bufferReadAndSend("udp");
     return bufferReadAndSend("data");
   }
-    
+
   Serial.println(urlString);
-  
-  HTTPClient http; 
+
+  HTTPClient http;
   http.begin(OSMO_HTTP_SERVER_SEND, OsMoSSLFingerprint);
   http.setUserAgent(deviceName);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");

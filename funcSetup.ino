@@ -1,13 +1,13 @@
 void getTimeFromInternet() {
   Serial.println("Syncing time...");
   int syncSecs = 0;
-  configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");  
+  configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");
   setenv("TZ", "GMT+0", 0);
-  while(time(nullptr) < 2000) {
+  while (time(nullptr) < 2000) {
     if (syncSecs > 60) {
       return ESP.restart();
     }
-    
+
     Serial.print(" .");
     syncSecs++;
     delay(1000);
@@ -70,7 +70,7 @@ bool setupWiFiManager() {
 
 String readCfgFile(String configVar) {
   String result = "";
-  
+
   File file = LittleFS.open("/" + configVar + ".cfg", "r");
   if (file) {
     result = file.readString();
@@ -80,7 +80,7 @@ String readCfgFile(String configVar) {
   } else {
     Serial.println("Problem read " + configVar + ".cfg");
   }
-  
+
   return result;
 }
 

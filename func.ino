@@ -1,19 +1,17 @@
 // core functions
 bool getDeviceConfiguration(bool UPnP) {
   StaticJsonDocument<1024> jb;
-  String postData = 
-    "token=" + TOKEN + "&" +
-    "revision=" + String(DEVICE_REVISION) + "&" +
-    "model=" + String(DEVICE_MODEL) + "&" +
-    "firmware=" + String(DEVICE_FIRMWARE) + "&"
-    "ip=" + WiFi.localIP().toString() + "&" +
-    "port=" + String(LOCAL_PORT) + "&" +
-    "mac=" + String(WiFi.macAddress()) + "&" +
-    "ssid=" + String(WiFi.SSID()) + "&" +
-    "rssi=" + String(WiFi.RSSI()) + "&" +
-    "vcc=" + String(ESP.getVcc()) + "&" +
-    "upnp=" + (int) UPnP + "&" +
-    "bufferCount=" + String(bufferCount("data"));
+  String postData =
+      "token=" + TOKEN + "&" + "revision=" + String(DEVICE_REVISION) + "&" +
+      "model=" + String(DEVICE_MODEL) + "&" +
+      "firmware=" + String(DEVICE_FIRMWARE) +
+      "&"
+      "ip=" +
+      WiFi.localIP().toString() + "&" + "port=" + String(LOCAL_PORT) + "&" +
+      "mac=" + String(WiFi.macAddress()) + "&" + "ssid=" + String(WiFi.SSID()) +
+      "&" + "rssi=" + String(WiFi.RSSI()) + "&" +
+      "vcc=" + String(ESP.getVcc()) + "&" + "upnp=" + (int)UPnP + "&" +
+      "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
   const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
@@ -28,7 +26,7 @@ bool getDeviceConfiguration(bool UPnP) {
   if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
     ticker1.attach_ms(200, tickInternal);
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-    
+
     Serial.println("Error init device from OsMo.mobi");
     delay(15000);
     ESP.restart();
@@ -40,7 +38,7 @@ bool getDeviceConfiguration(bool UPnP) {
   } else {
     return false;
   }
-  
+
   String payload = http.getString();
   deserializeJson(doc, payload);
   http.end();
@@ -97,8 +95,7 @@ bool getDeviceConfiguration(bool UPnP) {
 }
 
 // bufferFile functions
-int bufferCount(String filename) 
-{
+int bufferCount(String filename) {
   int countLine = 0;
   File bufferFile = LittleFS.open("/" + filename + ".buff", "r");
   char buffer[256];
@@ -116,12 +113,12 @@ bool bufferWrite(String filename, String urlString) {
   if (bufferFile) {
     Serial.println("Write to local buffer file...");
     Serial.println(urlString);
-    
+
     bufferFile.println(urlString);
     bufferFile.close();
     return true;
   }
-  
+
   Serial.println("Buffer file open failed");
   return false;
 }
@@ -130,13 +127,13 @@ int bufferReadAndSend(String filename) {
   File bufferFile = LittleFS.open("/" + filename + ".buff", "r+");
   if (bufferFile) {
     int until = bufferCount(filename);
-    
-    HTTPClient http; 
+
+    HTTPClient http;
     http.begin(OSMO_HTTP_SERVER_SEND_PACK, OsMoSSLFingerprint);
     http.addHeader("Content-Type", "text/plain");
     http.setTimeout(15000);
     http.setUserAgent(deviceName);
-    
+
     bufferFile.seek(0, SeekSet);
     Serial.print("Buffer size: ");
     Serial.print(bufferFile.size());
@@ -153,8 +150,8 @@ int bufferReadAndSend(String filename) {
       toSend += buffer + String("\n ");
       rowsCount++;
       rowsCountAll++;
-      
-      if (rowsCount >= 10 || rowsCountAll >= until) {   
+
+      if (rowsCount >= 10 || rowsCountAll >= until) {
         Serial.println("SEND part of buffer");
         int httpCode = http.POST(toSend);
         Serial.println(httpCode);
@@ -178,30 +175,27 @@ int bufferReadAndSend(String filename) {
 }
 
 // LEDs functions
-void tickInternal()
-{
+void tickInternal() {
   int stateIntervalLed = digitalRead(BUILTIN_LED);
   digitalWrite(BUILTIN_LED, !stateIntervalLed);
 }
 
-void tickExternal(int mode)
-{
+void tickExternal(int mode) {
   int stateExternalLed = 0;
   switch (mode) {
-    case MAIN_MODE_NORMAL:
-    case MAIN_MODE_OFFLINE:
-    case MAIN_MODE_FAIL:
-      stateExternalLed = digitalRead(LED_EXTERNAL);
-      digitalWrite(LED_EXTERNAL, !stateExternalLed);
-      break;
-    default: 
-      stateExternalLed = digitalRead(LED_EXTERNAL);
-      digitalWrite(LED_EXTERNAL, !stateExternalLed);
+  case MAIN_MODE_NORMAL:
+  case MAIN_MODE_OFFLINE:
+  case MAIN_MODE_FAIL:
+    stateExternalLed = digitalRead(LED_EXTERNAL);
+    digitalWrite(LED_EXTERNAL, !stateExternalLed);
+    break;
+  default:
+    stateExternalLed = digitalRead(LED_EXTERNAL);
+    digitalWrite(LED_EXTERNAL, !stateExternalLed);
   }
 }
 
-void tickOffAll()
-{
+void tickOffAll() {
   ticker1.detach();
   ticker2.detach();
 }

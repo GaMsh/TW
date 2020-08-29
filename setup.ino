@@ -57,21 +57,21 @@ void setup()
     udp.begin(LOCAL_PORT);
     
     ///// UPnP
-    Serial.println("UPnP start");
-    boolean portMappingAdded = false;
-    tinyUPnP.addPortMappingConfig(WiFi.localIP(), LOCAL_PORT, RULE_PROTOCOL_UDP, 30000, deviceName);
-    while (!portMappingAdded) {
-      portMappingAdded = tinyUPnP.commitPortMappings();
-    
-//      if (!portMappingAdded) {
-//        // for debugging, you can see this in your router too under forwarding or UPnP
-//        tinyUPnP.printAllPortMappings();
-//        Serial.println(F("This was printed because adding the required port mapping failed"));
-//        delay(30000);  // 30 seconds before trying again
-//      }
-    }
-    UPnP = portMappingAdded;
-    Serial.println("UPnP done");
+//    Serial.println("UPnP start");
+//    boolean portMappingAdded = false;
+//    tinyUPnP.addPortMappingConfig(WiFi.localIP(), LOCAL_PORT, RULE_PROTOCOL_UDP, 30000, deviceName);
+//    while (!portMappingAdded) {
+//      portMappingAdded = tinyUPnP.commitPortMappings();
+//
+////      if (!portMappingAdded) {
+////        // for debugging, you can see this in your router too under forwarding or UPnP
+////        tinyUPnP.printAllPortMappings();
+////        Serial.println(F("This was printed because adding the required port mapping failed"));
+////        delay(30000);  // 30 seconds before trying again
+////      }
+//    }
+//    UPnP = portMappingAdded;
+//    Serial.println("UPnP done");
 
     ///// Final
     TOKEN = readCfgFile("token");
@@ -105,7 +105,7 @@ void setup()
           STATUS_BME280_GOOD = false;
           break;
         }
-        
+
         Serial.println("Could not find BME-280 sensor!");
         delay(900);
         tryBMERemaining--;
@@ -116,7 +116,7 @@ void setup()
       ticker2.attach_ms(4000, tickExternal, MAIN_MODE_NORMAL);
       myHumidity.begin();
       
-      if (myHumidity.readCompensatedHumidity() > 90) {
+      if (myHumidity.readHumidity() > 90) {
         callServer("S", "HEAT", "GY21");
         Serial.println("Heating started...");
         myHumidity.setHeater(HTU21D_ON);
