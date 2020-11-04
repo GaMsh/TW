@@ -79,7 +79,7 @@ void setup()
    
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
 
-    getTimeFromInternet();
+//    getTimeFromInternet();
 
     getDeviceConfiguration(UPnP);
 
@@ -114,6 +114,7 @@ void setup()
       tickOffAll();
       ticker1.attach_ms(4000, tickInternal);
       ticker2.attach_ms(4000, tickExternal, MAIN_MODE_NORMAL);
+      
       myHumidity.begin();
       
       if (myHumidity.readHumidity() > 90) {
