@@ -107,7 +107,7 @@ void setup()
         }
 
         Serial.println("Could not find BME-280 sensor!");
-        delay(900);
+        delay(980);
         tryBMERemaining--;
       }
   
@@ -121,7 +121,7 @@ void setup()
         callServer("S", "HEAT", "GY21");
         Serial.println("Heating started...");
         myHumidity.setHeater(HTU21D_ON);
-        delay(15000);
+        delay(5000);
         myHumidity.setHeater(HTU21D_OFF);
       }
     }

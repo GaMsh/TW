@@ -1,19 +1,19 @@
-void getTimeFromInternet() {
-  Serial.println("Syncing time...");
-  int syncSecs = 0;
-  configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");
-  setenv("TZ", "GMT+0", 0);
-  while (time(nullptr) < 2000) {
-    if (syncSecs > 60) {
-      return ESP.restart();
-    }
-
-    Serial.print(" .");
-    syncSecs++;
-    delay(1000);
-  }
-  Serial.println();
-}
+//void getTimeFromInternet() {
+//  Serial.println("Syncing time...");
+//  int syncSecs = 0;
+//  configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");
+//  setenv("TZ", "GMT+0", 0);
+//  while (time(nullptr) < 2000) {
+//    if (syncSecs > 60) {
+//      return ESP.restart();
+//    }
+//
+//    Serial.print(" .");
+//    syncSecs++;
+//    delay(1000);
+//  }
+//  Serial.println();
+//}
 
 void resetWiFiSettings() {
   ticker1.attach_ms(512, tickInternal);
