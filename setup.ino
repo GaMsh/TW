@@ -81,7 +81,7 @@ void setup()
 
 //    getTimeFromInternet();
 
-    getDeviceConfiguration(UPnP);
+    getDeviceConfiguration(); //UPnP);
 
     tickOffAll();
     ticker1.attach_ms(100, tickInternal);

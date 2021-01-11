@@ -1,5 +1,5 @@
 // core functions
-bool getDeviceConfiguration(bool UPnP) {
+bool getDeviceConfiguration()  { //bool UPnP) {
   StaticJsonDocument<1024> jb;
   String postData = 
     "token=" + TOKEN + "&" +
@@ -12,7 +12,7 @@ bool getDeviceConfiguration(bool UPnP) {
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
     "vcc=" + String(ESP.getVcc()) + "&" +
-    "upnp=" + (int) UPnP + "&" +
+ //   "upnp=" + (int) UPnP + "&" +
     "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 

@@ -1,6 +1,6 @@
 void taskConfig(int currentMillis) {
   if (currentMillis - previousMillisConfig > RECONFIG_INTERVAL) {
-    getDeviceConfiguration(UPnP);
+    getDeviceConfiguration(); //UPnP);
     previousMillisConfig = currentMillis;
   }
 }
@@ -225,14 +225,14 @@ boolean parseCommand(String incomingPacket) {
   data = getValue(other, '|', 1);
 
   //////
-  if (command == "RC") {
-    Serial.println("Remote control");
-    if (string == "IL") {
-      Serial.println("Ticker set to " + data);  
-      ticker2.attach_ms(data.toInt(), tickExternal, MAIN_MODE_NORMAL);
-      callServer("RC", "IL", "1");
-    }
-  }
+//  if (command == "RC") {
+//    Serial.println("Remote control");
+//    if (string == "IL") {
+//      Serial.println("Ticker set to " + data);  
+//      ticker2.attach_ms(data.toInt(), tickExternal, MAIN_MODE_NORMAL);
+//      callServer("RC", "IL", "1");
+//    }
+//  }
   //////
   
   return true;

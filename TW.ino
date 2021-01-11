@@ -23,7 +23,7 @@
 #include <BME280I2C.h>            // https://github.com/finitespace/BME280
 //#include <EnvironmentCalculations.h> // https://github.com/finitespace/BME280
 
-// для работы статусных сведодиодов
+// для работы статусных светодиодов
 #include <Ticker.h>               // https://github.com/esp8266/Arduino
 
 // // //
@@ -57,7 +57,7 @@ WiFiUDP udp;
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
-#define TW_UPDATE_SERVER "http://tw.gamsh.ru"
+#define TW_UPDATE_SERVER "http://tw.bigapi.ru"
 #define OSMO_HTTP_SERVER_DEVICE "http://iot.osmo.mobi/device"
 #define OSMO_HTTP_SERVER_SEND "https://iot.osmo.mobi/send"
 #define OSMO_HTTP_SERVER_SEND_PACK "https://iot.osmo.mobi/sendPack"
@@ -69,10 +69,10 @@ boolean STATUS_GY21_GOOD = true;
 boolean STATUS_REPORT_SEND = false;
 
 boolean UDP_MODE = true; // переключение устройства в режим постоянной связи
-boolean UPnP = false; // флаг того, что роутер открыл нам прямую связь на порт
+//boolean UPnP = false; // флаг того, что роутер открыл нам прямую связь на порт
 
 int LOCAL_PORT = 10125; // локальный порт для UDP
-int PING_INTERVAL = 1000; // интервал пинга сервера по UDP по умолчанию
+int PING_INTERVAL = 825; // интервал пинга сервера по UDP по умолчанию
 int LED_BRIGHT = 200; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
 int REBOOT_INTERVAL = 6 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
@@ -88,7 +88,7 @@ int BUFFER_COUNT = 0; // счётчик строк в буферном файл�
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "kitkat";
-const char* DEVICE_FIRMWARE = "2.2.3";
+const char* DEVICE_FIRMWARE = "2.2.5";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
