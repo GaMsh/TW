@@ -1,5 +1,5 @@
 // core functions
-bool getDeviceConfiguration()  {
+bool getDeviceConfiguration(bool first)  {
   StaticJsonDocument<1024> jb;
   String postData = 
     "token=" + TOKEN + "&" +
@@ -26,13 +26,19 @@ bool getDeviceConfiguration()  {
   http.setTimeout(30000);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
   int httpCode = http.POST(postData);
-  if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
-    ticker1.attach_ms(200, tickInternal);
-    ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-    Serial.println("Error init device from OsMo.mobi");
-    delay(15000);
-    ESP.restart();
+  if (!first && httpCode < 0) {
+    NO_SERVER = true;
     return false;
+  } else {
+    if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
+      ticker1.attach_ms(200, tickInternal);
+      ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
+      Serial.println("Error init device from OsMo.mobi");
+      Serial.println(httpCode);
+      delay(15000);
+      ESP.restart();
+      return false;
+    }
   }
   Serial.println("get device config and set env, result: " + String(httpCode));
   if (httpCode == HTTP_CODE_OK) {

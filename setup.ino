@@ -26,7 +26,6 @@ void setup()
   ticker2.attach_ms(100, tickExternal, MAIN_MODE_OFFLINE);
 
   if (!setupWiFiManager()) {
-    Serial.println("failed to connect and hit timeout");
     delay(15000);
     ESP.restart();
   } else {
@@ -67,7 +66,7 @@ void setup()
    
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
 
-    getDeviceConfiguration();
+    getDeviceConfiguration(true);
     
     tickOffAll();
     ticker1.attach_ms(100, tickInternal);
@@ -103,13 +102,13 @@ void setup()
       
       myHumidity.begin();
       
-//      if (myHumidity.readHumidity() > 90) {
-//        callServer("S", "HEAT", "GY21");
-//        Serial.println("Heating started...");
-//        myHumidity.setHeater(HTU21D_ON);
-//        delay(5000);
-//        myHumidity.setHeater(HTU21D_OFF);
-//      }
+      if (myHumidity.readHumidity() > 80) {
+        callServer("S", "HEAT", "GY21");
+        Serial.println("Heating started...");
+        myHumidity.setHeater(HTU21D_ON);
+        delay(4200);
+        myHumidity.setHeater(HTU21D_OFF);
+      }
     }
   }
 

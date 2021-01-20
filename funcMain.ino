@@ -1,6 +1,6 @@
 void taskConfig(int currentMillis) {
   if (currentMillis - previousMillisConfig > CONFIG_INTERVAL) {
-    getDeviceConfiguration();
+    getDeviceConfiguration(false);
     previousMillisConfig = currentMillis;
   }
 }
@@ -17,8 +17,10 @@ void taskRestart(int currentMillis) {
     if (currentMillis - previousMillisReboot > REBOOT_INTERVAL) {
       Serial.println("It`s time to reboot");
       if (!NO_INTERNET && !NO_SERVER) {
+        delay(10000);
         ESP.restart();
       } else {
+        previousMillisReboot = currentMillis + REBOOT_INTERVAL/2;
         Serial.println("But it`s impossible, no internet connection");
       }
     }
