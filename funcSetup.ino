@@ -36,7 +36,7 @@ void manualCheckFirmwareUpdate() {
     ticker1.attach_ms(200, tickInternal);
     while (resetCycle < 42) {
       MODE_RESET_WIFI = digitalRead(RESET_WIFI);
-      if (MODE_RESET_WIFI == LOW && NO_AUTO_UPDATE) {
+      if (MODE_RESET_WIFI == LOW) {
         Serial.println("MANUAL UPDATE");
         checkFirmwareUpdate(true);
         break;

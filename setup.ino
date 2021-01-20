@@ -16,7 +16,7 @@ void setup()
     Serial.println("CHIP TEST mode is activated. No real data from sensors in this mode");
   }
   if (NO_AUTO_UPDATE) {
-    Serial.println("NO AUTO UPDATE firmware mode is activated! You can manually update, by RESET_WIFI pin to HIGH on boot");
+    Serial.println("NO AUTO UPDATE firmware mode is activated! You can manually update, by RESET_WIFI pin to LOW on boot");
     manualCheckFirmwareUpdate();
   }
   
