@@ -81,7 +81,7 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 
 const char* DEVICE_MODEL = "GaM_TW";
 const char* DEVICE_REVISION = "kaliningrad";
-const char* DEVICE_FIRMWARE = "2.5.0";
+const char* DEVICE_FIRMWARE = "2.6.0";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5

@@ -102,7 +102,7 @@ void setup()
       
       myHumidity.begin();
       
-      if (myHumidity.readHumidity() > 80) {
+      if (myHumidity.readCompensatedHumidity() >= 80) {
         callServer("S", "HEAT", "GY21");
         Serial.println("Heating started...");
         myHumidity.setHeater(HTU21D_ON);

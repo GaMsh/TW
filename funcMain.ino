@@ -20,7 +20,7 @@ void taskRestart(int currentMillis) {
         delay(10000);
         ESP.restart();
       } else {
-        previousMillisReboot = currentMillis + REBOOT_INTERVAL/2;
+        previousMillisReboot = currentMillis;
         Serial.println("But it`s impossible, no internet connection");
       }
     }
@@ -48,7 +48,7 @@ void mainProcess(int currentMillis) {
   // BME-280
   if (CHIP_TEST) {
     p1 = 760.25;
-    t1 = 25.2;
+    t1 = 25.29;
     h1 = 65.93;
   } else {
     BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
@@ -60,7 +60,7 @@ void mainProcess(int currentMillis) {
 
   // GY-21
   if (CHIP_TEST) {
-    t2 = 20.5;
+    t2 = 20.51;
     h2 = 60.25;
   } else {
     t2 = myHumidity.readTemperature();
