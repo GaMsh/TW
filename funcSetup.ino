@@ -1,20 +1,3 @@
-//void getTimeFromInternet() {
-//  Serial.println("Syncing time...");
-//  int syncSecs = 0;
-//  configTime(0, 0, "0.ru.pool.ntp.org", "1.ru.pool.ntp.org");
-//  setenv("TZ", "GMT+0", 0);
-//  while (time(nullptr) < 2000) {
-//    if (syncSecs > 60) {
-//      return ESP.restart();
-//    }
-//
-//    Serial.print(" .");
-//    syncSecs++;
-//    delay(1000);
-//  }
-//  Serial.println();
-//}
-
 void resetWiFiSettings() {
   ticker1.attach_ms(512, tickInternal);
   Serial.println("WiFi reset by special PIN");
@@ -32,8 +15,8 @@ void checkWiFiConfiguration() {
 
     // reset wifi by connect RESET_WIFI pin to GROUND
     int resetCycle = 0;
-    ticker1.attach_ms(35, tickInternal);
-    while (resetCycle < 50) {
+    ticker1.attach_ms(36, tickInternal);
+    while (resetCycle < 42) {
       MODE_RESET_WIFI = digitalRead(RESET_WIFI);
       if (MODE_RESET_WIFI == LOW) {
         resetWiFiSettings();
@@ -42,10 +25,25 @@ void checkWiFiConfiguration() {
       resetCycle++;
       delay(36);
     }
-    // end reset wifi
   } else {
-    Serial.println("We dont have saved WiFi settings, need configure");
+    Serial.println("We don`t have saved WiFi settings, need configure");
   }
+}
+
+void manualCheckFirmwareUpdate() {
+    // reset firmware by connect RESET_WIFI pin to GROUND
+    int resetCycle = 0;
+    ticker1.attach_ms(200, tickInternal);
+    while (resetCycle < 42) {
+      MODE_RESET_WIFI = digitalRead(RESET_WIFI);
+      if (MODE_RESET_WIFI == LOW && NO_AUTO_UPDATE) {
+        Serial.println("MANUAL UPDATE");
+        checkFirmwareUpdate(true);
+        break;
+      }
+      resetCycle++;
+      delay(36);
+    }
 }
 
 bool setupWiFiManager() {

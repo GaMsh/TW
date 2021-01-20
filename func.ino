@@ -1,5 +1,5 @@
 // core functions
-bool getDeviceConfiguration()  { //bool UPnP) {
+bool getDeviceConfiguration()  {
   StaticJsonDocument<1024> jb;
   String postData = 
     "token=" + TOKEN + "&" +
@@ -12,7 +12,8 @@ bool getDeviceConfiguration()  { //bool UPnP) {
     "ssid=" + String(WiFi.SSID()) + "&" +
     "rssi=" + String(WiFi.RSSI()) + "&" +
     "vcc=" + String(ESP.getVcc()) + "&" +
- //   "upnp=" + (int) UPnP + "&" +
+    "nu=" + String(NO_AUTO_UPDATE) + "&" +
+    "ct=" + String(CHIP_TEST) + "&" +
     "bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
@@ -28,7 +29,6 @@ bool getDeviceConfiguration()  { //bool UPnP) {
   if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
     ticker1.attach_ms(200, tickInternal);
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-
     Serial.println("Error init device from OsMo.mobi");
     delay(15000);
     ESP.restart();
@@ -45,26 +45,20 @@ bool getDeviceConfiguration()  { //bool UPnP) {
   deserializeJson(doc, payload);
   http.end();
 
-  int mytime = doc["time"].as<int>();
-  Serial.println(mytime);
+  int serverTime = doc["time"].as<int>();
+  Serial.println(serverTime);
 
   struct timeval tv;
-  tv.tv_sec = mytime;
-  settimeofday(&tv, NULL);
+  tv.tv_sec = serverTime;
+  settimeofday(&tv, NULL); // Применяем время сервера, как локальное
 
-  if (doc["interval"].as<int>() > 4) {
+  if (doc["interval"].as<int>() > 0) {
     int SENS_INTERVAL_NEW = doc["interval"].as<int>() * 1000;
     if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
       SENS_INTERVAL = SENS_INTERVAL_NEW;
       writeCfgFile("interval", doc["interval"].as<String>());
       Serial.println("Interval was updated in store");
     }
-  }
-
-  if (OsMoSSLFingerprint != doc["tlsFinger"].as<String>()) {
-    OsMoSSLFingerprint = doc["tlsFinger"].as<String>();
-    writeCfgFile("ssl", OsMoSSLFingerprint);
-    Serial.println("tlsFinger was updated in store");
   }
 
   if (TOKEN != doc["token"].as<String>()) {
@@ -78,7 +72,7 @@ bool getDeviceConfiguration()  { //bool UPnP) {
     if (LED_BRIGHT != LED_BRIGHT_NEW) {
       LED_BRIGHT = LED_BRIGHT_NEW;
       writeCfgFile("led_bright", doc["led_bright"].as<String>());
-      Serial.println("Led intersivity was updated in store");
+      Serial.println("Led brightness was updated in store");
     }
   }
 
@@ -91,7 +85,9 @@ bool getDeviceConfiguration()  { //bool UPnP) {
     }
   }
 
-  WiFi.scanNetworks(true);
+  if (FULL_MODE) {
+    WiFi.scanNetworks(true);
+  }
 
   return true;
 }
@@ -131,10 +127,10 @@ int bufferReadAndSend(String filename) {
     int until = bufferCount(filename);
 
     HTTPClient http;
-    http.begin(OSMO_HTTP_SERVER_SEND_PACK, OsMoSSLFingerprint);
+    http.begin(OSMO_HTTP_SERVER_SEND_PACK);
+    http.setUserAgent(deviceName);
     http.addHeader("Content-Type", "text/plain");
     http.setTimeout(15000);
-    http.setUserAgent(deviceName);
 
     bufferFile.seek(0, SeekSet);
     Serial.print("Buffer size: ");

@@ -11,6 +11,14 @@ void setup()
   Serial.println("Voltage: " + String(ESP.getVcc()));
 
   checkWiFiConfiguration();
+
+  if (CHIP_TEST) {
+    Serial.println("CHIP TEST mode is activated. No real data from sensors in this mode");
+  }
+  if (NO_AUTO_UPDATE) {
+    Serial.println("NO AUTO UPDATE firmware mode is activated! You can manually update, by RESET_WIFI pin to HIGH on boot");
+    manualCheckFirmwareUpdate();
+  }
   
   WiFi.hostname(deviceName);
   
@@ -25,7 +33,7 @@ void setup()
     Serial.println("WiFi network connected (" + String(WiFi.RSSI()) + ")");
     NO_INTERNET = false;
 
-    checkFirmwareUpdate();
+    checkFirmwareUpdate(false);
 
     if (LittleFS.begin()) {
       Serial.println(F("LittleFS was mounted"));
@@ -35,13 +43,8 @@ void setup()
 
     ///// Config
     int customInterval = readCfgFile("interval").toInt();
-    if (customInterval > 1) {
+    if (customInterval > 0) {
       SENS_INTERVAL = customInterval * 1000;
-    }
-  
-    String customSsl = readCfgFile("ssl");
-    if (customSsl) {
-      OsMoSSLFingerprint = customSsl;
     }
 
     int customLedBright = readCfgFile("led_bright").toInt();
@@ -54,35 +57,18 @@ void setup()
       LOCAL_PORT = customLocalPort;
     }
     ///// UDP
-    udp.begin(LOCAL_PORT);
+    if (FULL_MODE) {
+      udp.begin(LOCAL_PORT);
+    }
     
-    ///// UPnP
-//    Serial.println("UPnP start");
-//    boolean portMappingAdded = false;
-//    tinyUPnP.addPortMappingConfig(WiFi.localIP(), LOCAL_PORT, RULE_PROTOCOL_UDP, 30000, deviceName);
-//    while (!portMappingAdded) {
-//      portMappingAdded = tinyUPnP.commitPortMappings();
-//
-////      if (!portMappingAdded) {
-////        // for debugging, you can see this in your router too under forwarding or UPnP
-////        tinyUPnP.printAllPortMappings();
-////        Serial.println(F("This was printed because adding the required port mapping failed"));
-////        delay(30000);  // 30 seconds before trying again
-////      }
-//    }
-//    UPnP = portMappingAdded;
-//    Serial.println("UPnP done");
-
     ///// Final
     TOKEN = readCfgFile("token");
     callServer("I", "I", "I");
    
     ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
 
-//    getTimeFromInternet();
-
-    getDeviceConfiguration(); //UPnP);
-
+    getDeviceConfiguration();
+    
     tickOffAll();
     ticker1.attach_ms(100, tickInternal);
 
@@ -107,7 +93,7 @@ void setup()
         }
 
         Serial.println("Could not find BME-280 sensor!");
-        delay(980);
+        delay(900);
         tryBMERemaining--;
       }
   
@@ -117,13 +103,13 @@ void setup()
       
       myHumidity.begin();
       
-      if (myHumidity.readHumidity() > 90) {
-        callServer("S", "HEAT", "GY21");
-        Serial.println("Heating started...");
-        myHumidity.setHeater(HTU21D_ON);
-        delay(5000);
-        myHumidity.setHeater(HTU21D_OFF);
-      }
+//      if (myHumidity.readHumidity() > 90) {
+//        callServer("S", "HEAT", "GY21");
+//        Serial.println("Heating started...");
+//        myHumidity.setHeater(HTU21D_ON);
+//        delay(5000);
+//        myHumidity.setHeater(HTU21D_OFF);
+//      }
     }
   }
 

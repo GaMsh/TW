@@ -1,6 +1,6 @@
 void taskConfig(int currentMillis) {
-  if (currentMillis - previousMillisConfig > RECONFIG_INTERVAL) {
-    getDeviceConfiguration(); //UPnP);
+  if (currentMillis - previousMillisConfig > CONFIG_INTERVAL) {
+    getDeviceConfiguration();
     previousMillisConfig = currentMillis;
   }
 }
@@ -74,41 +74,42 @@ void mainProcess(int currentMillis) {
   } else {
     STATUS_BME280_GOOD = false;
   }
-  if (t2 != 255 || t2 != 998 || t2 != 999) {
+  if (t2 != 255 && t2 != 998 && t2 != 999) {
     urlString += "t2=" + String(t2) + "&" + "h2=" + String(h2) + "&";
     STATUS_GY21_GOOD = true;
   } else {
     STATUS_GY21_GOOD = false;
   }
 
-  urlString +=
-      "millis=" + String(millis()) + "&" + "time=" + String(time(&now));
+  urlString += "millis=" + String(millis()) + "&" + "time=" + String(time(&now));
   actionDo(urlString);
 
-  String string = "";
-  if (!isnan(p1)) {
-    string += "t1" + String(t1) + "h1" + String(h1) + "p1" + String(p1);
-    STATUS_BME280_GOOD = true;
-  } else {
-    STATUS_BME280_GOOD = false;
-  }
-  if (t2 != 255 || t2 != 998 || t2 != 999) {
-    string += "t2" + String(t2) + "h2" + String(h2);
-    STATUS_GY21_GOOD = true;
-  } else {
-    STATUS_GY21_GOOD = false;
-  }
-  string += "M" + String(millis()) + "T" + String(time(&now));
-
-  if (NO_SERVER) {
-    bufferWrite("udp", string);
-  } else {
-    callServer("D", "", string);
+  if (FULL_MODE) {
+    String string = "";
+    if (!isnan(p1)) {
+      string += "t1" + String(t1) + "h1" + String(h1) + "p1" + String(p1);
+      STATUS_BME280_GOOD = true;
+    } else {
+      STATUS_BME280_GOOD = false;
+    }
+    if (t2 != 255 && t2 != 998 && t2 != 999) {
+      string += "t2" + String(t2) + "h2" + String(h2);
+      STATUS_GY21_GOOD = true;
+    } else {
+      STATUS_GY21_GOOD = false;
+    }
+    string += "M" + String(millis()) + "T" + String(time(&now));
+  
+    if (NO_SERVER) {
+      bufferWrite("udp", string);
+    } else {
+      callServer("D", "", string);
+    }
   }
 }
 
-void checkFirmwareUpdate() {
-  if (!NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST) {
+void checkFirmwareUpdate(bool ignoreConfig) {
+  if (!ignoreConfig && !NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST) {
     t_httpUpdate_return ret = ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
 
     switch (ret) {
@@ -143,14 +144,16 @@ void actionDo(String urlString) {
 boolean callToServer(String urlString) {
   if (NO_INTERNET) {
     NO_INTERNET = false;
-    bufferReadAndSend("udp");
+    if (FULL_MODE) {
+      bufferReadAndSend("udp");
+    }
     return bufferReadAndSend("data");
   }
 
   Serial.println(urlString);
 
   HTTPClient http;
-  http.begin(OSMO_HTTP_SERVER_SEND, OsMoSSLFingerprint);
+  http.begin(OSMO_HTTP_SERVER_SEND);
   http.setUserAgent(deviceName);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
@@ -201,7 +204,6 @@ boolean writeLocalBuffer(String urlString) {
   return bufferWrite("data", urlString);
 }
 
-
 boolean parseCommand(String incomingPacket) {
   String other = "";
   Serial.println(incomingPacket);
@@ -224,7 +226,6 @@ boolean parseCommand(String incomingPacket) {
   string = getValue(other, '|', 0);
   data = getValue(other, '|', 1);
 
-  //////
 //  if (command == "RC") {
 //    Serial.println("Remote control");
 //    if (string == "IL") {
@@ -233,7 +234,6 @@ boolean parseCommand(String incomingPacket) {
 //      callServer("RC", "IL", "1");
 //    }
 //  }
-  //////
-  
+
   return true;
 }
