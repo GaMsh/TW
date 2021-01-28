@@ -10,7 +10,7 @@
 // для удобной настройки WiFi
 #include <DNSServer.h>            // https://github.com/esp8266/Arduino
 #include <ESP8266WebServer.h>     // https://github.com/esp8266/Arduino
-#include <MyWiFiManager.h>        // https://github.com/tzapu/WiFiManager
+#include <MyWiFiManager.h>        // https://github.com/tzapu/WiFiManager (это сугубо отсылка к автору, библиотеку надо брать из папки libraries)
 // важно знать! используется изменённая библиотека WiFiManager 0.15,
 // с русским переводом, блокировкой сброса точки в случае длительного отсутствия и парой баг фиксов
 
@@ -52,7 +52,7 @@ WiFiUDP udp;
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
-#define TW_UPDATE_SERVER "http://tw.bigapi.ru"
+#define TW_UPDATE_SERVER "http://tw.gamsh.ru"
 #define OSMO_HTTP_SERVER_DEVICE "http://iot.osmo.mobi/device"
 #define OSMO_HTTP_SERVER_SEND "http://iot.osmo.mobi/send"
 #define OSMO_HTTP_SERVER_SEND_PACK "http://iot.osmo.mobi/sendPack"
@@ -64,11 +64,11 @@ boolean STATUS_GY21_GOOD = true;
 boolean STATUS_REPORT_SEND = false;
 
 boolean FULL_MODE = false; // переключение устройства в режим "постоянной" связи через UDP
-
 int LOCAL_PORT = 10125; // локальный порт для UDP
 int PING_INTERVAL = 1200; // интервал пинга сервера по UDP по умолчанию
-int LED_BRIGHT = 125; // яркость внешнего светодиода в режиме ожидания
-int SENS_INTERVAL = 60000; // интервал опроса датчиков
+
+int LED_BRIGHT = 100; // яркость внешнего светодиода в режиме ожидания по умолчанию
+int SENS_INTERVAL = 60000; // интервал опроса датчиков по умолчанию
 int REBOOT_INTERVAL = 4 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
 int CONFIG_INTERVAL = 60 * 60000; // интервал обновления конфигурации устройства с сервера
 int REPORT_INTERVAL = 60 * 60000; // интервал повтора отправки отчёта о проблемах (если проблема актуальна)
@@ -79,7 +79,7 @@ boolean MODE_SEND_BUFFER = false; // флаг означающий, что не�
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
-const char* DEVICE_MODEL = "GaM_TW";
+const char* DEVICE_MODEL = "HomeClimateSensor";
 const char* DEVICE_REVISION = "kaliningrad";
 const char* DEVICE_FIRMWARE = "2.6.0";
 
@@ -92,7 +92,7 @@ unsigned long previousMillisPing = 0;
 unsigned long previousMillisReboot = 0;
 unsigned long previousMillisReport = 0;
 
-String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
+String deviceName = String(DEVICE_MODEL);
 
 String TOKEN = "";
 

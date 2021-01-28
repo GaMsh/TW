@@ -1,5 +1,5 @@
 {
-  "name": "WifiManager",
+  "name": "MyWifiManager",
   "keywords": "wifi, wi-fi",
   "description": "ESP8266 WiFi Connection manager with fallback web configuration portal",
   "repository":
