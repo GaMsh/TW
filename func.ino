@@ -20,8 +20,9 @@ bool getDeviceConfiguration(bool first)  {
   const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
   DynamicJsonDocument doc(capacity);
 
+  WiFiClient wifi;
   HTTPClient http;
-  http.begin(OSMO_HTTP_SERVER_DEVICE);
+  http.begin(wifi, OSMO_HTTP_SERVER_DEVICE);
   http.setUserAgent(deviceName);
   http.setTimeout(30000);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -33,14 +34,14 @@ bool getDeviceConfiguration(bool first)  {
     if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
       ticker1.attach_ms(200, tickInternal);
       ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-      Serial.println("Error init device from OsMo.mobi");
+      Serial.println("Failed to initialize the device using the server");
       Serial.println(httpCode);
       delay(15000);
       ESP.restart();
       return false;
     }
   }
-  Serial.println("get device config and set env, result: " + String(httpCode));
+  Serial.println("Get device configuration from server, HTTP Code: " + String(httpCode));
   if (httpCode == HTTP_CODE_OK) {
     NO_SERVER = false;
   } else {
@@ -63,14 +64,14 @@ bool getDeviceConfiguration(bool first)  {
     if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
       SENS_INTERVAL = SENS_INTERVAL_NEW;
       writeCfgFile("interval", doc["interval"].as<String>());
-      Serial.println("Interval was updated in store");
+      Serial.println("Sending interval was updated in store");
     }
   }
 
   if (TOKEN != doc["token"].as<String>()) {
     TOKEN = doc["token"].as<String>();
     writeCfgFile("token", TOKEN);
-    Serial.println("Token was updated in store");
+    Serial.println("Device token was updated in store");
   }
 
   if (doc["led_bright"].as<int>() > 0) {
@@ -132,8 +133,9 @@ int bufferReadAndSend(String filename) {
   if (bufferFile) {
     int until = bufferCount(filename);
 
+    WiFiClient wifi;
     HTTPClient http;
-    http.begin(OSMO_HTTP_SERVER_SEND_PACK);
+    http.begin(wifi, OSMO_HTTP_SERVER_SEND_PACK);
     http.setUserAgent(deviceName);
     http.addHeader("Content-Type", "text/plain");
     http.setTimeout(15000);
@@ -180,8 +182,8 @@ int bufferReadAndSend(String filename) {
 
 // LEDs functions
 void tickInternal() {
-  int stateIntervalLed = digitalRead(BUILTIN_LED);
-  digitalWrite(BUILTIN_LED, !stateIntervalLed);
+  int stateIntervalLed = digitalRead(LED_BUILTIN);
+  digitalWrite(LED_BUILTIN, !stateIntervalLed);
 }
 
 void tickExternal(int mode) {
@@ -205,19 +207,18 @@ void tickOffAll() {
 }
 
 // https://stackoverflow.com/questions/9072320/split-string-into-string-array
-String getValue(String data, char separator, int index)
-{
+String getValue(String data, char separator, int index) {
   int found = 0;
   int strIndex[] = {0, -1};
   int maxIndex = data.length()-1;
 
-  for(int i=0; i<=maxIndex && found<=index; i++){
-    if(data.charAt(i)==separator || i==maxIndex){
+  for(int i = 0; i <= maxIndex && found <= index; i++){
+    if(data.charAt(i) == separator || i == maxIndex){
         found++;
-        strIndex[0] = strIndex[1]+1;
-        strIndex[1] = (i == maxIndex) ? i+1 : i;
+        strIndex[0] = strIndex[1] + 1;
+        strIndex[1] = (i == maxIndex) ? i + 1 : i;
     }
   }
 
-  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+  return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }

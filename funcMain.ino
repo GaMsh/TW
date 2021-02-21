@@ -112,7 +112,10 @@ void mainProcess(int currentMillis) {
 
 void checkFirmwareUpdate(bool ignoreConfig) {
   if (ignoreConfig || (!NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST)) {
-    t_httpUpdate_return ret = ESPhttpUpdate.update(TW_UPDATE_SERVER, DEVICE_FIRMWARE);
+
+    WiFiClient wifi;
+    ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
+    t_httpUpdate_return ret = ESPhttpUpdate.update(wifi, TW_UPDATE_SERVER, DEVICE_FIRMWARE);
 
     switch (ret) {
     case HTTP_UPDATE_FAILED:
@@ -154,8 +157,9 @@ boolean callToServer(String urlString) {
 
   Serial.println(urlString);
 
+  WiFiClient wifi;
   HTTPClient http;
-  http.begin(OSMO_HTTP_SERVER_SEND);
+  http.begin(wifi, OSMO_HTTP_SERVER_SEND);
   http.setUserAgent(deviceName);
   http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 

@@ -83,7 +83,7 @@ void setup()
       tickOffAll();
       ticker1.attach_ms(2000, tickInternal);
       ticker2.attach_ms(2000, tickExternal, MAIN_MODE_NORMAL);
-      int tryBMERemaining = 7;
+      int tryBMERemaining = 11;
       while(!bme.begin())
       {
         if (tryBMERemaining == 0) {
@@ -118,6 +118,6 @@ void setup()
   
   analogWrite(LED_EXTERNAL, 255);
   delay(500);
-  digitalWrite(BUILTIN_LED, HIGH);
+  digitalWrite(LED_BUILTIN, HIGH);
   analogWrite(LED_EXTERNAL, LED_BRIGHT);
 }

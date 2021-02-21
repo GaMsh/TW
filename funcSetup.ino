@@ -100,3 +100,7 @@ int writeCfgFile(String configVar, String value) {
 
   return -1;
 }
+
+String getSensorID(String customPath) {
+  return String(WiFi.macAddress() + "/" + customPath);
+}
