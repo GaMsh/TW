@@ -1,4 +1,4 @@
-#include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino
+#include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino (2.7.4)
 #include <ESP8266HTTPClient.h>    // https://github.com/esp8266/Arduino
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 #include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
@@ -18,6 +18,7 @@
 #include <Wire.h>                 // https://github.com/esp8266/Arduino
 #include <HTU21D.h>               // https://github.com/enjoyneering/HTU21D
 #include <BME280I2C.h>            // https://github.com/finitespace/BME280
+#include <SHT3x.h>                // https://github.com/Risele/SHT3x
 
 // для работы статусных светодиодов
 #include <Ticker.h>               // https://github.com/esp8266/Arduino
@@ -27,17 +28,18 @@
 ADC_MODE(ADC_VCC);
 
 BME280I2C::Settings settings(
-   BME280::OSR_X1,
-   BME280::OSR_X1,
-   BME280::OSR_X1,
-   BME280::Mode_Forced,
-   BME280::StandbyTime_1000ms,
-   BME280::Filter_Off,
-   BME280::SpiEnable_False,
-   BME280I2C::I2CAddr_0x76
+        BME280::OSR_X1,
+        BME280::OSR_X1,
+        BME280::OSR_X1,
+        BME280::Mode_Forced,
+        BME280::StandbyTime_1000ms,
+        BME280::Filter_Off,
+        BME280::SpiEnable_False,
+        BME280I2C::I2CAddr_0x76
 );
-BME280I2C bme(settings);
-HTU21D myHumidity(HTU21D_RES_RH12_TEMP14);
+BME280I2C OUTDOOR_SENSOR(settings);
+HTU21D INDOOR_SENSOR1(HTU21D_RES_RH12_TEMP14);
+SHT3x INDOOR_SENSOR2;
 
 Ticker ticker1;
 Ticker ticker2;
@@ -59,14 +61,15 @@ WiFiUDP udp;
 #define OSMO_SERVER_HOST "osmo.mobi"
 #define OSMO_SERVER_PORT 24827
 
-boolean STATUS_BME280_GOOD = true;
-boolean STATUS_GY21_GOOD = true;
+boolean STATUS_OUTDOOR_GOOD = true;
+boolean STATUS_INDOOR1_GOOD = true;
+boolean STATUS_INDOOR2_GOOD = true;
 boolean STATUS_REPORT_SEND = false;
 
 boolean FULL_MODE = false; // переключение устройства в режим "постоянной" связи через UDP
 
 int LOCAL_PORT = 10125; // локальный порт для UDP
-int PING_INTERVAL = 1200; // интервал пинга сервера по UDP по умолчанию
+int PING_INTERVAL = 2000; // интервал пинга сервера по UDP по умолчанию
 int LED_BRIGHT = 125; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 4 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
@@ -79,9 +82,9 @@ boolean MODE_SEND_BUFFER = false; // флаг означающий, что не�
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
-const char* DEVICE_MODEL = "GaM_TW";
-const char* DEVICE_REVISION = "kaliningrad";
-const char* DEVICE_FIRMWARE = "2.7.0";
+const char *DEVICE_MODEL = "HCS";
+const char *DEVICE_REVISION = "perm";
+const char *DEVICE_FIRMWARE = "3.1.0";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
@@ -100,10 +103,10 @@ int bytesWriten = 0;
 int pingCount = 0;
 
 void configModeCallback(WiFiManager *myWiFiManager) {
-  Serial.println("Entered config mode");
-  Serial.println(WiFi.softAPIP());
-  Serial.println(myWiFiManager->getConfigPortalSSID());
-  Serial.println(WiFi.macAddress());
-  ticker1.attach_ms(500, tickInternal);
-  ticker2.attach_ms(1000, tickExternal, MAIN_MODE_NORMAL);
+    Serial.println("Entered config mode");
+    Serial.println(WiFi.softAPIP());
+    Serial.println(myWiFiManager->getConfigPortalSSID());
+    Serial.println(WiFi.macAddress());
+    ticker1.attach_ms(500, tickInternal);
+    ticker2.attach_ms(1000, tickExternal, MAIN_MODE_NORMAL);
 }
