@@ -54,22 +54,22 @@ WiFiUDP udp;
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
-#define TW_UPDATE_SERVER "http://tw.bigapi.ru"
-#define OSMO_HTTP_SERVER_DEVICE "http://iot.osmo.mobi/device"
-#define OSMO_HTTP_SERVER_SEND "http://iot.osmo.mobi/send"
-#define OSMO_HTTP_SERVER_SEND_PACK "http://iot.osmo.mobi/sendPack"
-#define OSMO_SERVER_HOST "osmo.mobi"
-#define OSMO_SERVER_PORT 24827
+#define FIRMWARE_UPDATE_SERVER "http://tw.bigapi.ru"
+#define HTTP_SERVER_DEVICE "http://iot.osmo.mobi/device"
+#define HTTP_SERVER_SEND "http://iot.osmo.mobi/send"
+#define HTTP_SERVER_SEND_PACK "http://iot.osmo.mobi/sendPack"
+#define UDP_SERVER_HOST "bigapi.ru"
+#define UDP_SERVER_PORT 25827
 
 boolean STATUS_OUTDOOR_GOOD = true;
 boolean STATUS_INDOOR1_GOOD = true;
 boolean STATUS_INDOOR2_GOOD = true;
 boolean STATUS_REPORT_SEND = false;
 
-boolean FULL_MODE = false; // переключение устройства в режим "постоянной" связи через UDP
+boolean FULL_MODE = true; // переключение устройства в режим "постоянной" связи через UDP
 
 int LOCAL_PORT = 10125; // локальный порт для UDP
-int PING_INTERVAL = 2000; // интервал пинга сервера по UDP по умолчанию
+int PING_INTERVAL = 3000; // интервал пинга сервера по UDP по умолчанию
 int LED_BRIGHT = 125; // яркость внешнего светодиода в режиме ожидания
 int SENS_INTERVAL = 60000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 4 * 60 * 60000; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
@@ -83,8 +83,8 @@ boolean MODE_SEND_BUFFER = false; // флаг означающий, что не�
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
 const char *DEVICE_MODEL = "HCS";
-const char *DEVICE_REVISION = "perm";
-const char *DEVICE_FIRMWARE = "3.1.0";
+const char *DEVICE_REVISION = "ohta";
+const char *DEVICE_FIRMWARE = "3.2.0";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5

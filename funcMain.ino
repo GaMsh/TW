@@ -138,7 +138,7 @@ void checkFirmwareUpdate(bool ignoreConfig) {
 
         WiFiClient wifi;
         ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
-        t_httpUpdate_return ret = ESPhttpUpdate.update(wifi, TW_UPDATE_SERVER, DEVICE_FIRMWARE);
+        t_httpUpdate_return ret = ESPhttpUpdate.update(wifi, FIRMWARE_UPDATE_SERVER, DEVICE_FIRMWARE);
 
         switch (ret) {
             case HTTP_UPDATE_FAILED:
@@ -182,7 +182,7 @@ boolean callToServer(String urlString) {
 
     WiFiClient wifi;
     HTTPClient http;
-    http.begin(wifi, OSMO_HTTP_SERVER_SEND);
+    http.begin(wifi, HTTP_SERVER_SEND);
     http.setUserAgent(deviceName);
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
@@ -212,7 +212,7 @@ void pingServer() {
 }
 
 void callServer(String command, String string, String data) {
-    udp.beginPacket(OSMO_SERVER_HOST, OSMO_SERVER_PORT);
+    udp.beginPacket(UDP_SERVER_HOST, UDP_SERVER_PORT);
     String query = TOKEN + "__" + command;
     if (string != "") {
         query += ":" + string;

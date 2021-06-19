@@ -22,7 +22,7 @@ bool getDeviceConfiguration(bool first) {
 
     WiFiClient wifi;
     HTTPClient http;
-    http.begin(wifi, OSMO_HTTP_SERVER_DEVICE);
+    http.begin(wifi, HTTP_SERVER_DEVICE);
     http.setUserAgent(deviceName);
     http.setTimeout(30000);
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -135,7 +135,7 @@ int bufferReadAndSend(String filename) {
 
         WiFiClient wifi;
         HTTPClient http;
-        http.begin(wifi, OSMO_HTTP_SERVER_SEND_PACK);
+        http.begin(wifi, HTTP_SERVER_SEND_PACK);
         http.setUserAgent(deviceName);
         http.addHeader("Content-Type", "text/plain");
         http.setTimeout(15000);
