@@ -45,7 +45,6 @@ void mainProcess(int currentMillis) {
     float t2;
     float h2;
 
-
     // INDOOR2
     float t3;
     float h3;
@@ -86,20 +85,24 @@ void mainProcess(int currentMillis) {
 
     time_t now = time(nullptr);
 
+    boolean someGood = false;
     String urlString = "token=" + String(TOKEN) + "&";
     if (!isnan(p1)) {
+        someGood = true;
         urlString += "t1=" + String(t1) + "&h1=" + String(h1) + "&p1=" + String(p1) + "&";
         STATUS_OUTDOOR_GOOD = true;
     } else {
         STATUS_OUTDOOR_GOOD = false;
     }
     if (t2 != 255 && t2 != 998 && t2 != 999) {
+        someGood = true;
         urlString += "t2=" + String(t2) + "&" + "h2=" + String(h2) + "&";
         STATUS_INDOOR1_GOOD = true;
     } else {
         STATUS_INDOOR1_GOOD = false;
     }
     if (t3 != 255 && t3 != 998 && t3 != 999 && h3 != 0) {
+        someGood = true;
         urlString += "t3=" + String(t3) + "&" + "h3=" + String(h3) + "&";
         STATUS_INDOOR2_GOOD = true;
     } else {
@@ -107,7 +110,9 @@ void mainProcess(int currentMillis) {
     }
 
     urlString += "millis=" + String(millis()) + "&" + "time=" + String(time(&now));
-    actionDo(urlString);
+    if (someGood) {
+        actionDo(urlString);
+    }
 
     if (FULL_MODE) {
         String string = "";
@@ -135,11 +140,9 @@ void mainProcess(int currentMillis) {
 
 void checkFirmwareUpdate(bool ignoreConfig) {
     if (ignoreConfig || (!NO_AUTO_UPDATE && !NO_INTERNET && !CHIP_TEST)) {
-
         WiFiClient wifi;
         ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
         t_httpUpdate_return ret = ESPhttpUpdate.update(wifi, FIRMWARE_UPDATE_SERVER, DEVICE_FIRMWARE);
-
         switch (ret) {
             case HTTP_UPDATE_FAILED:
                 Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n",
@@ -229,7 +232,6 @@ boolean writeLocalBuffer(String urlString) {
         NO_INTERNET = true;
         Serial.println("NO INTERNET MODE ACTIVATED");
     }
-
     return bufferWrite("data", urlString);
 }
 
